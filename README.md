@@ -1,4 +1,6 @@
-# Prep Sprint
+# Free Wonderlic Practice
+
+[freewonderlicpractice.com](https://freewonderlicpractice.com)
 
 A study app for the Wonderlic test: 50 questions in 12 minutes, scored as the number you get right. It also covers the school-admissions version (the SLE) and its shorter form (the SLE-Q) — both are options on the Test page. No install, no build step.
 
@@ -33,8 +35,9 @@ Keyboard: `A`–`E` or `1`–`5` to answer, `Enter` for next, `←`/`→` to mov
 
 "Wonderlic" is a registered trademark of Wonderlic, Inc., so the site keeps its own name separate from the test's name. The test is only ever named to say what the site helps you prepare for.
 
-- **Site name** lives in three places: `SITE.name` in `js/core.js`, and the `<title>` and header link in `index.html`. "Prep Sprint" is a placeholder — replace it once a domain is picked.
+- **Site name, domain and contact email** live in `SITE` in `js/core.js`. The name is repeated in the `<title>` and header link in `index.html`, which is the only other place to change it.
 - **Disclaimer** sits in the footer of `index.html` and appears on every page. Leave it there.
-- **Terms & Privacy** is `js/legal.js`, shown at `#/legal`. Two things still to do before launch: add a real contact email, and have a lawyer read it.
+- **Terms & Privacy** is `js/legal.js`, shown at `#/legal`. Still to do: have a lawyer read it.
+- **`contact@freewonderlicpractice.com` has to actually work** — the legal page tells people to use it for corrections and takedown requests, so set up the mailbox before launch.
 - **The privacy text says the site collects nothing.** That is true only while there is no analytics, no ads and no sign-up form. Adding any of those means rewriting that section first, and probably adding cookie consent.
 - **Never add real test questions**, and don't copy questions from other prep sites. Everything here being original is the main thing protecting the site.

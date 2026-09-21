@@ -17,7 +17,7 @@
 
       <section class="card legal">
         <h2>What this site is</h2>
-        <p>${site.name} is a free study tool for people preparing for the ${site.mark} test. Every question on it was written or generated for this site. None of it is real test content, and nobody here has seen the real test.</p>
+        <p>${site.domain} is a free, independent study site for people preparing for the ${site.mark} test. Every question on it was written or generated for this site. None of it is real test content, and nobody here has seen the real test.</p>
         <p>A score you get here is a practice score. It is not an official result, it does not predict your real score, and it means nothing to a school or an employer.</p>
       </section>
 
@@ -50,7 +50,7 @@
 
       <section class="card legal">
         <h2>Questions or corrections</h2>
-        <p>Found a wrong answer, or need something taken down? Email <b>[add a contact email before launch]</b>.</p>
+        <p>Found a wrong answer, or need something taken down? Email <a href="mailto:${site.email}">${site.email}</a>.</p>
       </section>
 
       <p><a class="back" href="#/">← Back to studying</a></p>`,

@@ -53,11 +53,18 @@
   ];
   const CAT = Object.fromEntries(CATS.map((c) => [c.id, c]));
 
-  // This site's own name, kept apart from the test's name on purpose.
-  // "Wonderlic" is someone else's trademark, so it is used to describe which
-  // test we help with — never as our own brand. Renaming the site means
-  // changing `name` here plus the <title> and header in index.html.
-  const SITE = { name: 'Prep Sprint', mark: 'Wonderlic®', owner: 'Wonderlic, Inc.' };
+  // Who we are, and who owns the test's name. "Wonderlic" is someone else's
+  // trademark: we use it to describe which test we help with, never as a logo
+  // or a badge of our own. That's why the ® and the footer notice matter.
+  // Renaming the site means changing `name` here plus the <title> and header
+  // link in index.html.
+  const SITE = {
+    name: 'Free Wonderlic Practice',
+    domain: 'freewonderlicpractice.com',
+    email: 'contact@freewonderlicpractice.com',
+    mark: 'Wonderlic®',
+    owner: 'Wonderlic, Inc.',
+  };
 
   // The two versions of the test. Same length and timing — they differ in
   // which topics come up.
