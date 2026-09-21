@@ -3,7 +3,7 @@
   const $main = document.getElementById('main');
   const TARGET_SEC = 14.4; // 12 minutes / 50 questions
   const TEST_Q = 50, TEST_SEC = 12 * 60;
-  const SLEQ_Q = 30, SLEQ_SEC = 8 * 60; // the shorter SLE-Q some schools use
+  const SLEQ_Q = 30, SLEQ_SEC = 8 * 60; // the short version (schools call it the SLE-Q)
   const DIFF = { 1: 'Easy', 2: 'Medium', 3: 'Hard' };
   const KEYS = 'ABCDEF';
 
@@ -202,8 +202,8 @@
 
     setView(`
       <section class="hero">
-        <h1>Wonderlic SLE Practice</h1>
-        <p class="sub">50 questions · 12 minutes · about <b>14 seconds</b> per question<br><span class="small">Shorter SLE-Q: 30 questions in 8 minutes</span></p>
+        <h1>Wonderlic Practice</h1>
+        <p class="sub">50 questions · 12 minutes · about <b>14 seconds</b> per question</p>
         <div class="stat-row">
           <div class="stat"><div class="v">${d.settings.target}</div><div class="l">Target score</div></div>
           <div class="stat"><div class="v">${best ?? '—'}</div><div class="l">Best test</div></div>
@@ -518,8 +518,8 @@
       <h1>Full Practice Test</h1>
       <div class="card lesson">
         <ul>
-          <li>The <b>SLE</b> is 50 questions in 12 minutes — about 14 seconds each. Most people don’t finish, and that’s normal.</li>
-          <li>Some schools use the shorter <b>SLE-Q</b>: 30 questions in 8 minutes, same kinds of questions. Ask your program which one you’ll take.</li>
+          <li><b>50 questions, 12 minutes.</b> That’s about 14 seconds each — most people don’t finish, and that’s normal.</li>
+          <li>There’s also a <b>short version</b>: 30 questions in 8 minutes, same kinds of questions. Some schools use that one instead.</li>
           <li>Questions get <b>harder as you go</b>. Grab the easy points early.</li>
           <li>Your score is the <b>number you get right</b>. Wrong answers don’t cost extra, so never leave one blank — guess and move on.</li>
           <li>Stuck? Skip it. You can jump back using the question grid.</li>
@@ -528,12 +528,13 @@
         </ul>
       </div>
       <div class="btns center wrap">
-        <button class="btn primary big" id="go">SLE · 50 questions, 12 minutes</button>
-        <button class="btn big" id="goq">SLE-Q · 30 questions, 8 minutes</button>
+        <button class="btn primary big" id="go">Full test · 50 questions, 12 minutes</button>
+        <button class="btn big" id="goq">Short test · 30 questions, 8 minutes</button>
       </div>
+      <p class="muted center small">Schools call these the <b>SLE</b> and the <b>SLE-Q</b>. Ask your program which one you’ll take.</p>
       <p class="muted center">${[best(TEST_Q), best(SLEQ_Q)].filter(Boolean).join(' · ') || 'No tests taken yet.'}</p>`);
     document.getElementById('go').onclick = () => startTest({ count: TEST_Q, seconds: TEST_SEC, title: 'Full test', full: true });
-    document.getElementById('goq').onclick = () => startTest({ count: SLEQ_Q, seconds: SLEQ_SEC, title: 'SLE-Q', full: true });
+    document.getElementById('goq').onclick = () => startTest({ count: SLEQ_Q, seconds: SLEQ_SEC, title: 'Short test', full: true });
   }
 
   function startTest(cfg) {
@@ -716,7 +717,7 @@
     }).join('');
     setView(`
       <h1>Progress</h1>
-      <div class="card"><h3>Full test scores</h3>${chart}${shortTests.length ? `<p class="muted small">SLE-Q (30 questions): ${shortTests.map((t) => t.score + '/30').join(', ')}</p>` : ''}</div>
+      <div class="card"><h3>Full test scores</h3>${chart}${shortTests.length ? `<p class="muted small">Short test (30 questions): ${shortTests.map((t) => t.score + '/30').join(', ')}</p>` : ''}</div>
       <div class="card"><h3>By topic</h3>
         <div class="table-wrap"><table class="stats"><thead><tr><th>Topic</th><th>Answered</th><th>Accuracy</th><th>Avg time</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
         <p class="muted small">Avg time is green when you’re under the 14-second pace.</p>

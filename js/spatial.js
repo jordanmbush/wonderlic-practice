@@ -1,4 +1,4 @@
-// Shape and pattern questions — the abstract-reasoning part of the SLE.
+// Shape and pattern questions — the abstract-reasoning part of the test.
 // Figures are inline SVG (no image files), drawn in currentColor so they
 // follow the light/dark theme.
 (function () {

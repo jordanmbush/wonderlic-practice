@@ -4,14 +4,14 @@ window.LESSONS = {
   /* ------------------------------------------------------------------ */
   strategy: {
     title: 'Test-day strategy',
-    intro: `<p>The <b>SLE (Scholastic Level Exam)</b> is the school-admissions version of the Wonderlic. It has the same shape as the classic test: <b>50 questions in 12 minutes</b>, about <b>14 seconds per question</b>. Almost nobody finishes, and that’s normal. Your score is simply the number you get right — nothing is taken off for a wrong answer — so the goal is to collect as many easy points as you can, as fast as you can.</p>`,
+    intro: `<p>The Wonderlic is <b>50 questions in 12 minutes</b> — about <b>14 seconds per question</b>. Almost nobody finishes, and that’s normal. Your score is simply the number you get right — nothing is taken off for a wrong answer — so the goal is to collect as many easy points as you can, as fast as you can.</p>`,
     sections: [
       {
-        h: 'The two versions',
+        h: 'Two lengths, same test',
         html: `<ul>
-<li><b>SLE:</b> 50 questions in 12 minutes — about <b>14 seconds</b> each. This is the version the full tests in this app copy.</li>
-<li><b>SLE-Q (the short one):</b> 30 questions in 8 minutes — about <b>16 seconds</b> each. Some schools use this instead. Same kinds of questions, just fewer of them.</li>
-<li>Ask your program which one you’ll take. Either way, the practice is the same — the question types don’t change, only the length.</li>
+<li><b>Full length:</b> 50 questions in 12 minutes — about <b>14 seconds</b> each.</li>
+<li><b>Short:</b> 30 questions in 8 minutes — about <b>16 seconds</b> each. Same kinds of questions, just fewer of them.</li>
+<li>Both are on the Test page. Schools taking the admissions version call them the <b>SLE</b> and the <b>SLE-Q</b> — ask your program which one you’ll sit. Either way the practice is the same; only the length changes.</li>
 </ul>`,
       },
       {
