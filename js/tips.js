@@ -10,6 +10,8 @@
       'Boil each saying down to a few plain words (“don’t waste”, “act early”), then compare those plain words instead of the wording.',
     oddone:
       'Look for the group that covers four of them; whatever is left over is the answer. Go by what the things ARE, not by how the words look.',
+    grammar:
+      'Read the sentence out loud in your head with each choice in place — the wrong one usually sounds wrong before you can name the rule.',
     logic:
       'Swap the made-up words for real ones, or sketch a circle for each group. If you can picture even one case where the statement fails, answer “Not certain”.',
     compare:

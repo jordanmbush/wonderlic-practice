@@ -227,9 +227,28 @@ button.link { background: none; border: none; color: var(--brand); font: inherit
 .rv .qtext { font-size: 1rem; }
 .rv .explain { color: var(--muted); font-size: 0.93rem; }
 
+/* ---------- shape questions ---------- */
+.fig { width: 74px; height: 74px; flex: none; color: var(--ink); display: block; }
+.fig.sm { width: 50px; height: 50px; }
+.figrow { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin: 14px 0 2px; }
+.figbox { text-align: center; }
+.figbox > span { display: block; font-size: 0.76rem; color: var(--muted); margin-bottom: 1px; }
+.matrix { display: inline-grid; grid-template-columns: repeat(3, 58px); gap: 6px; margin: 14px 0 2px; padding: 8px; border: 1px solid var(--line); border-radius: 12px; }
+.matrix > * { display: flex; align-items: center; justify-content: center; height: 58px; }
+.qcell { font-weight: 800; font-size: 1.3rem; color: var(--muted); background: var(--bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+.matrix .qcell { width: 100%; }
+.figrow .qcell { width: 74px; height: 74px; flex: none; }
+.choice .fig { width: 58px; height: 58px; }
+.ex-choices .fig { width: 52px; height: 52px; display: inline-block; vertical-align: middle; }
+@media (max-width: 640px) {
+  .fig { width: 60px; height: 60px; }
+  .figrow .qcell { width: 60px; height: 60px; }
+  .figrow { gap: 10px; }
+}
+
 /* ---------- stats ---------- */
 .chart { position: relative; height: 180px; display: flex; align-items: flex-end; gap: 6px; padding: 18px 0 0; border-bottom: 1px solid var(--line); }
-.chart .col { flex: 1; height: 100%; display: flex; align-items: flex-end; }
+.chart .col { flex: 1; max-width: 64px; height: 100%; display: flex; align-items: flex-end; }
 .colbar { width: 100%; background: var(--brand); border-radius: 6px 6px 0 0; position: relative; min-height: 4px; }
 .colbar.hit { background: var(--good); }
 .colbar span { position: absolute; top: -18px; left: 0; right: 0; text-align: center; font-size: 0.72rem; color: var(--muted); }

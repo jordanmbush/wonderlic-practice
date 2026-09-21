@@ -4,14 +4,22 @@ window.LESSONS = {
   /* ------------------------------------------------------------------ */
   strategy: {
     title: 'Test-day strategy',
-    intro: `<p>The Wonderlic SLE gives you <b>50 questions in 12 minutes</b>. That’s about <b>14 seconds per question</b>. Almost nobody finishes, and that’s normal. Your score is simply the number you get right, so the goal is to collect as many easy points as you can, as fast as you can.</p>`,
+    intro: `<p>The <b>SLE (Scholastic Level Exam)</b> is the school-admissions version of the Wonderlic. It has the same shape as the classic test: <b>50 questions in 12 minutes</b>, about <b>14 seconds per question</b>. Almost nobody finishes, and that’s normal. Your score is simply the number you get right — nothing is taken off for a wrong answer — so the goal is to collect as many easy points as you can, as fast as you can.</p>`,
     sections: [
+      {
+        h: 'The two versions',
+        html: `<ul>
+<li><b>SLE:</b> 50 questions in 12 minutes — about <b>14 seconds</b> each. This is the version the full tests in this app copy.</li>
+<li><b>SLE-Q (the short one):</b> 30 questions in 8 minutes — about <b>16 seconds</b> each. Some schools use this instead. Same kinds of questions, just fewer of them.</li>
+<li>Ask your program which one you’ll take. Either way, the practice is the same — the question types don’t change, only the length.</li>
+</ul>`,
+      },
       {
         h: 'Pacing',
         html: `<ul>
 <li>Aim for roughly <b>4 questions per minute</b>. At the 6-minute mark, try to be around question 20–25.</li>
-<li>Questions get <b>harder as you go</b>. The early ones are quick points — move through them briskly but carefully.</li>
-<li>If a question isn’t clicking after about 20 seconds, <b>guess, flag it, and move on</b>. One stubborn question can cost you three easy ones.</li>
+<li>Questions get <b>harder as you go</b>. The early ones are quick points — move through them briskly but carefully. The seconds you save up front are the ones you’ll need at the end.</li>
+<li>If a question isn’t clicking after about 20 seconds, <b>guess, flag it, and move on</b>. Skip anything that stalls you and come back if there’s time. One stubborn question can cost you three easy ones.</li>
 <li>Glance at the clock a few times, not constantly. Checking the clock every question wastes time.</li>
 </ul>`,
       },
@@ -44,8 +52,9 @@ window.LESSONS = {
       },
       {
         h: 'What’s a good score?',
-        html: `<p>On the Wonderlic personnel test, the <b>average score is about 20–21</b> out of 50. Scoring in the mid-20s or higher puts you above average.</p>
-<p>Every school sets its own cutoff, and they change. <b>Check your own program’s required score</b> with the admissions office or on its website, and aim a few points above it to give yourself a cushion.</p>`,
+        html: `<p>Your score is just the <b>number of questions you got right</b>. There’s no penalty for a wrong answer, so a blank can only hurt you.</p>
+<p><b>Required scores vary a lot by school and program.</b> Published minimums for health programs commonly sit somewhere between about <b>12 and 30</b> — that’s a wide range, so a number someone quotes online tells you almost nothing about your school.</p>
+<p>The only number that matters is the one <b>your own program</b> asks for. Confirm it with the admissions office or the program handbook, then set it as your <b>target score on the Progress page</b> and aim a few points above it to give yourself a cushion.</p>`,
       },
       {
         h: 'How to use this app',
@@ -117,6 +126,108 @@ window.LESSONS = {
         choices: ['bored', 'certain', 'anxious', 'eager', 'proud'],
         answer: 2,
         how: `<p>The clue word is <b>because</b> — the blank explains <i>why</i> the hygienist went slowly.</p><p>You slow down for someone who is nervous. Bored, certain, eager, and proud don’t call for extra care. Answer: <b>anxious</b>.</p>`,
+      },
+    ],
+  },
+
+  /* ------------------------------------------------------------------ */
+  grammar: {
+    title: 'Grammar & Word Choice',
+    intro: `<p>These questions test everyday English usage: picking the right word out of a look-alike pair (its / it’s), making the subject and verb match, spelling, apostrophes, and choosing the connecting word that fits the sentence. You don’t need grammar terms — you need a few quick tests you can run in your head in a couple of seconds.</p>`,
+    sections: [
+      {
+        h: 'Quick tests you can do in your head',
+        html: `<ul>
+<li><b>it’s</b> → read it as “it is.” If that sounds wrong, it’s <b>its</b>. (“It is late” ✔ → it’s. “The clinic lost it is key” ✘ → its.)</li>
+<li><b>they’re</b> → “they are.” <b>There</b> is a place (it has “here” inside it). <b>Their</b> shows ownership.</li>
+<li><b>you’re</b> → “you are.” If that sounds wrong, use <b>your</b>.</li>
+<li><b>affect</b> is usually the action (a verb); <b>effect</b> is usually the thing (a noun). “Sugar <i>affects</i> teeth.” “The <i>effect</i> was small.”</li>
+<li><b>fewer</b> for things you can count (fewer patients, fewer chairs); <b>less</b> for amounts you can’t count (less time, less water).</li>
+<li><b>Agreement:</b> cross out the phrase between the subject and the verb, then read it again. “Each <s>of the students</s> <b>is</b> ready.”</li>
+<li><b>than</b> compares (bigger than mine); <b>then</b> is about time or order (rinse, then dry).</li>
+</ul>`,
+      },
+      {
+        h: 'Cheat sheet: words that get mixed up',
+        html: `<table>
+<tr><th>Pair</th><th>Quick test</th><th>Example</th></tr>
+<tr><td>its / it’s</td><td>Read it as “it is”</td><td>It’s late. The clinic lost its key.</td></tr>
+<tr><td>their / there / they’re</td><td>“they are” → they’re; a place → there; owns it → their</td><td>They’re parking their car over there.</td></tr>
+<tr><td>your / you’re</td><td>Read it as “you are”</td><td>You’re early. Bring your card.</td></tr>
+<tr><td>affect / effect</td><td>Action → affect; thing → effect</td><td>Sugar affects teeth. The effect was small.</td></tr>
+<tr><td>fewer / less</td><td>Can you count them? → fewer</td><td>Fewer patients. Less time.</td></tr>
+<tr><td>than / then</td><td>Comparing → than; time or order → then</td><td>Older than Bo. First rinse, then dry.</td></tr>
+<tr><td>accept / except</td><td>Take it → accept; leave it out → except</td><td>Accept the offer. Everyone except Ann.</td></tr>
+<tr><td>lose / loose</td><td>One “o” loses one; two “o”s is too big</td><td>Don’t lose the key. A loose tooth.</td></tr>
+<tr><td>who’s / whose</td><td>Read it as “who is”</td><td>Who’s next? Whose chart is this?</td></tr>
+</table>
+<p><b>Spelling words adults miss:</b> separate, definitely, necessary, receive, calendar, occurred, embarrass, recommend, privilege, accommodate, existence, judgment, argument, until, tomorrow, February, restaurant, a lot (always two words).</p>
+<p>Memory hooks: sep<b>a rat</b>e has a rat in it. Nece<b>ss</b>ary = one collar, two sleeves (one c, two s’s). <b>I</b> before <b>e</b> except after <b>c</b>: receive, believe.</p>`,
+      },
+      {
+        h: 'Subject–verb agreement',
+        html: `<ul>
+<li><b>Cross out the middle.</b> “The box <s>of gloves</s> <b>is</b> on the shelf.” The box is — not the gloves.</li>
+<li><b>Each, every, either, neither, one, anyone, nobody</b> all mean <i>one</i>, so they take a singular verb: “Neither of the charts <b>is</b> missing.”</li>
+<li><b>Two subjects joined by “and”</b> are plural: “Ann and Bo <b>are</b> here.” With <b>or</b> or <b>nor</b>, match the part closest to the verb: “Either the dentist or the hygienists <b>are</b> coming.”</li>
+<li><b>There is / there are:</b> the real subject comes after the verb. “There <b>are</b> three charts.”</li>
+<li>Words that look plural but are one thing take a singular verb: news, mathematics. Group words — team, staff, family — usually do too: “The staff <b>is</b> trained.”</li>
+</ul>`,
+      },
+      {
+        h: 'Apostrophes: owning vs. more than one',
+        html: `<ul>
+<li><b>More than one → no apostrophe.</b> Three dentists, two charts, the 1990s.</li>
+<li><b>One owner → add ’s.</b> The patient<b>’s</b> chart (one patient).</li>
+<li><b>Several owners → apostrophe after the s.</b> The patients<b>’</b> charts (more than one patient).</li>
+<li><b>Ownership words that never take an apostrophe:</b> its, his, hers, ours, yours, theirs, whose.</li>
+<li>It’s, who’s, you’re, and they’re have apostrophes because letters were dropped: it is, who is, you are, they are.</li>
+<li><b>Trap:</b> a sign reading “Fresh apple’s” is wrong — that’s just more than one apple, so no apostrophe.</li>
+</ul>`,
+      },
+      {
+        h: 'Picking the connecting word',
+        html: `<p>Read both halves of the sentence and ask what the second half does to the first.</p>
+<ul>
+<li><b>Gives the reason</b> → because, since.</li>
+<li><b>Gives the result</b> → therefore, so, as a result.</li>
+<li><b>Turns against it</b> → however, but, although, even so.</li>
+<li><b>Backs it up with an example</b> → for example, in fact.</li>
+<li><b>Adds more of the same</b> → in addition, also, moreover.</li>
+</ul>
+<p><b>Most common miss:</b> swapping <i>however</i> and <i>therefore</i>. They point in opposite directions — <i>however</i> turns, <i>therefore</i> follows through.</p>`,
+      },
+    ],
+    examples: [
+      {
+        q: 'Choose the words that correctly complete the sentence:<br>“The clinic moved ______ office upstairs, and ______ open on Saturdays now.”',
+        choices: ['its / its', 'it’s / its', 'its / it’s', 'it’s / it’s', 'its’ / it’s'],
+        answer: 2,
+        how: `<p>Run the “it is” test on each blank.</p><ul><li>“The clinic moved <i>it is</i> office upstairs” — wrong, so the first blank is <b>its</b>.</li><li>“<i>It is</i> open on Saturdays now” — right, so the second blank is <b>it’s</b>.</li></ul><p>Answer: <b>its / it’s</b>. (“its’” is never a word.)</p>`,
+      },
+      {
+        q: 'Choose the correct verb:<br>“Each of the students ______ ready for the exam.”',
+        choices: ['are', 'is', 'were', 'have been', 'been'],
+        answer: 1,
+        how: `<p>Cross out the phrase between the subject and the verb: “Each <s>of the students</s> ______ ready.”</p><p>“Each” means one, so it takes a singular verb: “Each <b>is</b> ready.” The word “students” is there to pull you toward “are.” Answer: <b>is</b>.</p>`,
+      },
+      {
+        q: 'Which sentence is written correctly?',
+        choices: [
+          'The new rinse had a strong affect on her gums.',
+          'We had less patients today then yesterday.',
+          'The office is open to everyone accept walk-ins.',
+          'Fewer patients canceled this week, so we finished early.',
+          'The hygienists schedules are posted by the door.',
+        ],
+        answer: 3,
+        how: `<ul><li>“Strong <b>affect</b>” — it’s the thing, not the action, so it should be <b>effect</b>.</li><li>“<b>Less</b> patients” should be <b>fewer</b> (you can count patients), and “<b>then</b>” should be <b>than</b> (it’s a comparison).</li><li>“<b>Accept</b> walk-ins” should be <b>except</b> — it leaves them out.</li><li>“Fewer patients canceled” ✔ — countable, so fewer is right.</li><li>“The hygienists schedules” needs an apostrophe: hygienists<b>’</b> schedules.</li></ul><p>Answer: <b>Fewer patients canceled this week, so we finished early.</b></p>`,
+      },
+      {
+        q: 'Choose the word that best completes the sentence:<br>“The office lost power for an hour; ______, we had to reschedule the afternoon patients.”',
+        choices: ['however', 'therefore', 'although', 'for example', 'in addition'],
+        answer: 1,
+        how: `<p>Ask what the second half does: rescheduling is the <b>result</b> of losing power, not a turn against it.</p><p>“However” and “although” signal a contrast. “For example” would need an example, and “in addition” would need more of the same. Answer: <b>therefore</b>.</p>`,
       },
     ],
   },
@@ -870,3 +981,86 @@ window.LESSONS = {
     ],
   },
 };
+
+/* Shapes & Patterns. The figures are inline SVG, so they are built with a
+   couple of small helpers instead of being written out by hand. */
+(function () {
+  const line = 'fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"';
+  const L = `<polygon points="26,18 46,18 46,62 62,62 62,82 26,82" ${line}/>`;
+  const TRI = `<polygon points="24,16 24,84 70,84" ${line}/>`;
+  const fig = (shape, deg = 0, flip = false) =>
+    `<svg viewBox="0 0 100 100" class="fig"><g transform="rotate(${deg} 50 50)${flip ? ' translate(100 0) scale(-1 1)' : ''}">${shape}</g></svg>`;
+  const rowOf = (figs) => `<div class="figrow">${figs.join('')}</div>`;
+  const numbered = (figs) =>
+    `<div class="figrow">${figs.map((f, i) => `<div class="figbox"><span>${i + 1}</span>${f}</div>`).join('')}</div>`;
+  const fill = (solid) => (solid ? 'currentColor' : 'none');
+  const sq = (f) => `<rect x="26" y="26" width="48" height="48" fill="${fill(f === 'solid')}" stroke="currentColor" stroke-width="5"/>`;
+  const ci = (f) => `<circle cx="50" cy="50" r="26" fill="${fill(f === 'solid')}" stroke="currentColor" stroke-width="5"/>`;
+  const tr = (f) => `<polygon points="50,22 76,76 24,76" fill="${fill(f === 'solid')}" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>`;
+  const dotted = (shape, f) => shape(f) + (f === 'dot' ? '<circle cx="50" cy="54" r="7" fill="currentColor"/>' : '');
+  const cell = (shape, f) => `<svg viewBox="0 0 100 100" class="fig sm">${dotted(shape, f)}</svg>`;
+
+  window.LESSONS.spatial = {
+    title: 'Shapes & Patterns',
+    intro: `<p>A few questions show figures instead of words: a row of shapes that changes in some steady way, a set where one doesn’t belong, or a grid with one box missing. There’s no knowledge to remember here — it’s all noticing.</p>`,
+    sections: [
+      {
+        h: 'Turning is not flipping',
+        html: `<p>This is the one idea that unlocks most of these. <b>Turning a shape never swaps left for right.</b> If a figure’s hook, point, or door faces the other way, it has been flipped over — and a flipped shape can never be matched by turning, no matter how far you spin it.</p>
+${rowOf([fig(L, 0), fig(L, 90), fig(L, 180), fig(L, 0, true)])}
+<p>The first three are the same figure turned. The last one is flipped — look at which side the short foot sticks out.</p>`,
+      },
+      {
+        h: 'Watch one feature, not the whole shape',
+        html: `<p>Trying to hold the whole figure in your head is slow. Pick <b>one feature</b> — the point of a triangle, the door on a house, the long leg of an L — and watch only where that travels.</p>
+<p>Ask yourself: “the point was at the top, now it’s on the right, so it’s turning a quarter turn clockwise.” Then take one more quarter turn and look for that figure among the answers.</p>`,
+      },
+      {
+        h: 'Rows of shapes: count first',
+        html: `<p>If the figures aren’t turning, something is being counted. Turn the row into numbers — sides, dots, lines — and the pattern usually jumps out:</p>
+<ul>
+<li>3, 4, 5, 6 sides → the next is 7.</li>
+<li>1, 2, 4, 8 dots → doubling.</li>
+<li>Shapes taking turns (circle, square, circle, square…) → carry on the turn.</li>
+</ul>`,
+      },
+      {
+        h: 'Grids: read across, then down',
+        html: `<p>For a grid with a missing box, say the pattern out loud in two short phrases: <i>“shape across, filling down”</i>. Work out the two rules separately, then combine them for the empty box. Most grids only change two things, so once you name both, the answer is forced.</p>`,
+      },
+      {
+        h: 'Don’t sink time here',
+        html: `<p>Only a couple of questions on the test look like this. If a figure won’t click within about 20 seconds, guess and move on — the points are the same size as every other question.</p>`,
+      },
+    ],
+    examples: [
+      {
+        q: `Which figure comes next?${rowOf([fig(L, 0), fig(L, 90), fig(L, 180), '<div class="qcell fig">?</div>'])}`,
+        choices: [fig(L, 270), fig(L, 0), fig(L, 90, true), fig(L, 90)],
+        answer: 0,
+        how: `<p>Watch the short foot: it starts at the bottom, then points left, then sits at the top. It’s turning a quarter turn clockwise each time, so next it points right.</p><p>Careful with the third choice — it’s a flipped copy, not a turned one.</p>`,
+      },
+      {
+        q: `Four of these are the same figure turned different ways. Which one is different?${numbered([fig(TRI, 0), fig(TRI, 90), fig(TRI, 0, true), fig(TRI, 180), fig(TRI, 270)])}`,
+        choices: ['1', '2', '3', '4', '5'],
+        answer: 2,
+        how: `<p>Every triangle here has the same three sides, so size is no help. Look at the square corner: in four of them the long side runs the same way round the corner. In figure 3 it runs the other way — it has been flipped over.</p>`,
+      },
+      {
+        q: `Which figure belongs in the empty box?<div class="matrix">${[
+          cell(tr, 'open'), cell(tr, 'dot'), cell(tr, 'solid'),
+          cell(sq, 'open'), cell(sq, 'dot'), cell(sq, 'solid'),
+          cell(ci, 'open'), cell(ci, 'dot'), '<div class="qcell">?</div>',
+        ].join('')}</div>`,
+        choices: [
+          `<svg viewBox="0 0 100 100" class="fig">${ci('solid')}</svg>`,
+          `<svg viewBox="0 0 100 100" class="fig">${dotted(ci, 'dot')}</svg>`,
+          `<svg viewBox="0 0 100 100" class="fig">${sq('solid')}</svg>`,
+          `<svg viewBox="0 0 100 100" class="fig">${ci('open')}</svg>`,
+        ],
+        answer: 0,
+        how: `<p>Shape across: each row keeps one shape — triangles, then squares, then circles.</p><p>Filling down: each column keeps one filling — empty, dot, filled in.</p><p>The empty box sits in the circle row and the filled-in column, so it’s a filled-in circle.</p>`,
+      },
+    ],
+  };
+})();

@@ -3,6 +3,7 @@
   const $main = document.getElementById('main');
   const TARGET_SEC = 14.4; // 12 minutes / 50 questions
   const TEST_Q = 50, TEST_SEC = 12 * 60;
+  const SLEQ_Q = 30, SLEQ_SEC = 8 * 60; // the shorter SLE-Q some schools use
   const DIFF = { 1: 'Easy', 2: 'Medium', 3: 'Hard' };
   const KEYS = 'ABCDEF';
 
@@ -97,15 +98,15 @@
     return list[0];
   }
 
-  function buildTest() {
+  function buildTest(n = TEST_Q) {
     const slots = [];
     CATS.forEach((c) => {
       for (let i = 0; i < c.weight; i++) slots.push(QB.has(c.id) ? c.id : 'wordprob');
     });
-    const order = shuffle(slots).slice(0, TEST_Q);
+    const order = shuffle(slots).slice(0, n);
     const used = new Set();
     // Like the real test: easier questions first, harder at the end.
-    return order.map((cat, i) => getQuestion(cat, i < 15 ? 1 : i < 35 ? 2 : 3, used));
+    return order.map((cat, i) => getQuestion(cat, i < n * 0.3 ? 1 : i < n * 0.7 ? 2 : 3, used));
   }
 
   function weakCats(n = 3) {
@@ -186,8 +187,11 @@
   function viewHome() {
     const d = Store.get();
     const tests = d.tests;
-    const best = tests.length ? Math.max(...tests.map((t) => t.score)) : null;
-    const last = tests.length ? tests[tests.length - 1].score : null;
+    const outOf = (t) => t.outOf || TEST_Q;
+    const bestT = tests.length ? tests.reduce((b, t) => (t.score / outOf(t) > b.score / outOf(b) ? t : b)) : null;
+    const lastT = tests.length ? tests[tests.length - 1] : null;
+    const best = bestT ? `${bestT.score}/${outOf(bestT)}` : null;
+    const last = lastT ? `${lastT.score}/${outOf(lastT)}` : null;
     const today = d.daily[new Date().toISOString().slice(0, 10)] || 0;
     const weak = weakCats(3);
     const totalAnswered = Object.values(d.stats).reduce((s, v) => s + v.n, 0);
@@ -198,8 +202,8 @@
 
     setView(`
       <section class="hero">
-        <h1>Wonderlic Practice</h1>
-        <p class="sub">50 questions · 12 minutes · about <b>14 seconds</b> per question</p>
+        <h1>Wonderlic SLE Practice</h1>
+        <p class="sub">50 questions · 12 minutes · about <b>14 seconds</b> per question<br><span class="small">Shorter SLE-Q: 30 questions in 8 minutes</span></p>
         <div class="stat-row">
           <div class="stat"><div class="v">${d.settings.target}</div><div class="l">Target score</div></div>
           <div class="stat"><div class="v">${best ?? '—'}</div><div class="l">Best test</div></div>
@@ -506,11 +510,16 @@
   // ---------------- FULL TEST ----------------
   function viewTestIntro() {
     const tests = Store.get().tests;
+    const best = (n) => {
+      const list = tests.filter((t) => (t.outOf || TEST_Q) === n);
+      return list.length ? `${list.length} taken · best ${Math.max(...list.map((t) => t.score))}/${n}` : '';
+    };
     setView(`
       <h1>Full Practice Test</h1>
       <div class="card lesson">
         <ul>
-          <li><b>50 questions, 12 minutes.</b> That’s about 14 seconds each — most people don’t finish, and that’s normal.</li>
+          <li>The <b>SLE</b> is 50 questions in 12 minutes — about 14 seconds each. Most people don’t finish, and that’s normal.</li>
+          <li>Some schools use the shorter <b>SLE-Q</b>: 30 questions in 8 minutes, same kinds of questions. Ask your program which one you’ll take.</li>
           <li>Questions get <b>harder as you go</b>. Grab the easy points early.</li>
           <li>Your score is the <b>number you get right</b>. Wrong answers don’t cost extra, so never leave one blank — guess and move on.</li>
           <li>Stuck? Skip it. You can jump back using the question grid.</li>
@@ -518,15 +527,19 @@
           <li>Keyboard: press <kbd>A</kbd>–<kbd>E</kbd> (or <kbd>1</kbd>–<kbd>5</kbd>) to answer, <kbd>←</kbd>/<kbd>→</kbd> to move.</li>
         </ul>
       </div>
-      <button class="btn primary big" id="go">Start the 12-minute test</button>
-      ${tests.length ? `<p class="muted center">You’ve taken ${tests.length} test${tests.length > 1 ? 's' : ''}. Best: ${Math.max(...tests.map((t) => t.score))}.</p>` : ''}`);
+      <div class="btns center wrap">
+        <button class="btn primary big" id="go">SLE · 50 questions, 12 minutes</button>
+        <button class="btn big" id="goq">SLE-Q · 30 questions, 8 minutes</button>
+      </div>
+      <p class="muted center">${[best(TEST_Q), best(SLEQ_Q)].filter(Boolean).join(' · ') || 'No tests taken yet.'}</p>`);
     document.getElementById('go').onclick = () => startTest({ count: TEST_Q, seconds: TEST_SEC, title: 'Full test', full: true });
+    document.getElementById('goq').onclick = () => startTest({ count: SLEQ_Q, seconds: SLEQ_SEC, title: 'SLE-Q', full: true });
   }
 
   function startTest(cfg) {
     clearTimers();
     let qs;
-    if (cfg.full) qs = buildTest();
+    if (cfg.full) qs = buildTest(cfg.count);
     else {
       const used = new Set();
       qs = Array.from({ length: cfg.count }, (_, i) => getQuestion(weightedCat(cfg.cats), i < cfg.count * 0.3 ? 1 : i < cfg.count * 0.7 ? 2 : 3, used));
@@ -625,7 +638,7 @@
       });
       if (cfg.full) {
         const d = Store.get();
-        d.tests.push({ date: new Date().toISOString(), score, answered: results.filter((r) => r.pick !== null).length, used, perCat });
+        d.tests.push({ date: new Date().toISOString(), score, answered: results.filter((r) => r.pick !== null).length, used, perCat, outOf: qs.length });
         Store.save();
       }
       showTestResults(cfg, results, score, used, perCat, timeUp);
@@ -685,7 +698,8 @@
   function viewStats() {
     const d = Store.get();
     const target = d.settings.target;
-    const tests = d.tests.slice(-20);
+    const tests = d.tests.filter((t) => (t.outOf || TEST_Q) === TEST_Q).slice(-20);
+    const shortTests = d.tests.filter((t) => (t.outOf || TEST_Q) === SLEQ_Q).slice(-8);
     const chart = tests.length
       ? `<div class="chart">${tests
           .map((t) => `<div class="col" title="${new Date(t.date).toLocaleDateString()}: ${t.score}"><div class="colbar ${t.score >= target ? 'hit' : ''}" style="height:${(t.score / 50) * 100}%"><span>${t.score}</span></div></div>`)
@@ -702,7 +716,7 @@
     }).join('');
     setView(`
       <h1>Progress</h1>
-      <div class="card"><h3>Full test scores</h3>${chart}</div>
+      <div class="card"><h3>Full test scores</h3>${chart}${shortTests.length ? `<p class="muted small">SLE-Q (30 questions): ${shortTests.map((t) => t.score + '/30').join(', ')}</p>` : ''}</div>
       <div class="card"><h3>By topic</h3>
         <div class="table-wrap"><table class="stats"><thead><tr><th>Topic</th><th>Answered</th><th>Accuracy</th><th>Avg time</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
         <p class="muted small">Avg time is green when you’re under the 14-second pace.</p>
