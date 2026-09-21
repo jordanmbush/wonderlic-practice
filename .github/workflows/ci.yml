@@ -1,0 +1,81 @@
+# The release gate: does this commit still produce a static site?
+#
+# That is genuinely all it can check, and saying so is better than dressing it
+# up. There is no test framework here and none is wanted — the questions are
+# data, the scoring is a handful of lines, and a suite of tests for them would
+# be maintenance without a bug to catch. There is no lint or type-check step
+# either, because there are no `lint`/`type-check` npm scripts to run; adding
+# steps that call scripts which don't exist just produces a workflow that is
+# red for a reason nobody will read. If those scripts ever land in
+# package.json, add the steps then.
+#
+# So what is left is real and worth gating on: the dependencies install from
+# the lockfile, the build succeeds, and what it emits is static HTML. Every
+# deploy is gated on this passing (see deploy.yml), so a build that fails here
+# never reaches the live site.
+#
+# This repo is PRIVATE, so Actions minutes are metered rather than free.
+# The job below is one install and one build — a minute or two — and it runs
+# on pushes and pull requests to the long-lived branches only, not on every
+# push to every branch. That is the whole rationing strategy and it is plenty
+# at this size.
+name: CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+  # Runnable by hand against any branch, without having to push to it.
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          # Pinned here rather than read from a .nvmrc, because this repo
+          # doesn't have one. ⚠️ Keep this in step with deploy.yml: the deploy
+          # runs `npm run build` again on the runner, so a different Node major
+          # there means the bytes that ship are not the bytes CI validated. If
+          # a .nvmrc is ever added, switch BOTH files to `node-version-file`
+          # and the problem goes away for good.
+          node-version: "24"
+          cache: npm
+
+      # `npm ci`, never `npm install`: it installs exactly the lockfile and
+      # fails if package.json and package-lock.json disagree, which is the only
+      # way a dependency change gets noticed before it reaches production.
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # The build must keep producing a static site, and that is a cost
+      # constraint as much as a correctness one. An SSR adapter added by
+      # accident — they are a one-line change in astro.config.mjs and several
+      # Astro integrations pull one in — turns a $0/month S3 origin into a
+      # Lambda that bills per request, and the deploy would happily ship it.
+      # Better to find out here, for free.
+      - name: Assert the build is static
+        run: |
+          test -f dist/index.html || {
+            echo "::error::dist/index.html is missing — the build produced no static entry page"; exit 1;
+          }
+          if [ -d dist/_worker.js ] || [ -f dist/entry.mjs ] || [ -d dist/server ]; then
+            echo "::error::server output detected in dist/ — an SSR adapter crept in, and this site must stay static"; exit 1
+          fi

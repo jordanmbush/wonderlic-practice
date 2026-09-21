@@ -1,0 +1,28 @@
+{
+  "name": "wonderlic-practice",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Free Wonderlic practice test: timed practice, speed drills and plain-English guides. Static site, no accounts, progress stays in the visitor's own browser.",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview --port 4323",
+    "deploy:dev": "sst deploy --stage dev",
+    "deploy:production": "sst deploy --stage production",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "astro": "^7.2.1"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "prettier-plugin-astro": "^0.14.1",
+    "sst": "^4.17.1"
+  }
+}

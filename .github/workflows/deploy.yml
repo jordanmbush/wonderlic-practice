@@ -1,0 +1,161 @@
+# Deploy to production on merge to main.
+#
+# Gating: triggered by the CI workflow COMPLETING on `main`, and the job only
+# runs when that run succeeded — a red CI never deploys. `workflow_dispatch`
+# exists for manual re-runs (a Cloudflare hiccup, a re-deploy after rotating a
+# token) and deploys whatever `main` currently points at.
+#
+# Credentials: the job assumes an AWS role via GitHub OIDC, created by
+# scripts/setup-github-oidc.sh. The role hands out short-lived STS credentials
+# per run; no long-lived AWS keys exist anywhere, which is the whole point.
+#
+# Required repo SECRETS — the deploy FAILS LOUDLY without them, by design:
+#   CLOUDFLARE_API_TOKEN   "Edit zone DNS" template, scoped to this one zone
+#   CLOUDFLARE_ZONE_ID     the zone's id (not secret, but kept alongside)
+# Required repo VARIABLES:
+#   AWS_DEPLOY_ROLE_ARN    written for you by scripts/setup-github-oidc.sh
+#   CLOUDFLARE_ACCOUNT_ID  optional; skips the lookup step below
+#
+# sst.config.ts throws a named error if the zone id is missing rather than
+# silently deploying production without its domain — a "successful" deploy that
+# leaves the real hostname pointing nowhere is the worse failure, because
+# nothing goes red and the site is simply gone.
+#
+# docs/deploying.md walks all of this from an empty AWS account.
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  # One deploy at a time. Overlapping merges QUEUE rather than cancel: killing
+  # `sst deploy` mid-flight abandons the Pulumi state lock, and the next run
+  # then refuses to start until someone unlocks it by hand.
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  id-token: write # OIDC — without this the role assumption fails, not the deploy
+  contents: read
+  issues: write # the failure alert at the bottom
+
+jobs:
+  deploy:
+    name: Deploy production
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main')
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Deploy exactly the commit CI validated, not whatever main has
+          # drifted to since the run started.
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
+
+      - uses: actions/setup-node@v7
+        with:
+          # ⚠️ Must match ci.yml — the site is built again here, so a
+          # different Node major means shipping bytes CI never saw.
+          node-version: "24"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: us-west-1
+
+      # SST's Cloudflare provider insists on an account id even though this
+      # deploy only writes DNS records into one known zone. It tries to
+      # discover one by listing accounts, which a zone-scoped token cannot do —
+      # the deploy dies with "The Cloudflare Account ID was not able to be
+      # determined from this token", which reads like a broken token and isn't.
+      #
+      # Broadening the token to Account:Read would fix it and is the wrong
+      # trade: a deploy credential that can enumerate the whole Cloudflare
+      # account, to learn one id that isn't even secret. The zone endpoint
+      # already returns it, and reading the zone is well within what a
+      # DNS-editing token is for. Set the CLOUDFLARE_ACCOUNT_ID repo variable
+      # to skip the lookup entirely.
+      - name: Resolve the Cloudflare account id
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          OVERRIDE: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n "${OVERRIDE}" ]; then
+            echo "CLOUDFLARE_DEFAULT_ACCOUNT_ID=${OVERRIDE}" >> "$GITHUB_ENV"
+            echo "Using the CLOUDFLARE_ACCOUNT_ID repo variable."
+            exit 0
+          fi
+          response="$(curl -sS \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE_ID}")"
+          account="$(printf '%s' "$response" | jq -r '.result.account.id // empty')"
+          if [ -z "$account" ]; then
+            echo "::error::Could not read the account id from zone ${CLOUDFLARE_ZONE_ID}."
+            echo "The token needs Zone:Read on this zone as well as DNS:Edit — the" >&2
+            echo "'Edit zone DNS' template grants both. Alternatively set the" >&2
+            echo "CLOUDFLARE_ACCOUNT_ID repo variable (it is not a secret)." >&2
+            printf '%s' "$response" | jq -r '.errors // empty' >&2
+            exit 1
+          fi
+          echo "CLOUDFLARE_DEFAULT_ACCOUNT_ID=${account}" >> "$GITHUB_ENV"
+          echo "Resolved the Cloudflare account id from the zone."
+
+      - name: Deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+        # `--stage production` also flips sst.config.ts to retain/protect, so a
+        # stray removal can't delete the bucket serving the live site.
+        run: npx sst deploy --stage production
+
+      # The deploy succeeding means SST was happy, not that the site works.
+      # This is the step that talks to the live hostname the way a visitor
+      # does: DNS, certificate, cache headers, the 404 path.
+      - name: Post-deploy smoke checks
+        run: bash scripts/post-deploy-smoke.sh https://freewonderlicpractice.com
+
+      # A red check is easy to miss on a personal project, and a broken deploy
+      # on a site whose only traffic is search is invisible until rankings
+      # move. An issue is harder to ignore than a red tick.
+      - name: Alert on failed deploy
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          title="Production deploy failed"
+          body="Deploy failed: ${RUN_URL}
+
+          First things to check (docs/deploying.md has the long version):
+          - Are CLOUDFLARE_API_TOKEN and CLOUDFLARE_ZONE_ID set as repo secrets?
+            sst.config.ts refuses to deploy production without the zone id.
+          - Does the token carry Zone:Read as well as DNS:Edit? The account-id
+            lookup reads the zone; DNS:Edit on its own is not enough. Setting
+            the CLOUDFLARE_ACCOUNT_ID repo variable skips that lookup.
+          - Did the ACM certificate finish DNS validation? The first production
+            deploy blocks on it and can take several minutes.
+          - If it failed at 'Configure AWS credentials', re-run
+            scripts/setup-github-oidc.sh — the trust policy names specific
+            branches, and a renamed default branch invalidates it.
+          - The previous version is still being served — CloudFront only cuts
+            over after a successful upload, so the site is not down."
+          existing="$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number')"
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body "$body"
+          else
+            gh issue create --title "$title" --body "$body"
+          fi

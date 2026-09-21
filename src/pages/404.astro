@@ -1,0 +1,21 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base
+  title="Page not found"
+  description="That page doesn't exist."
+  noindex={true}
+>
+  <main id="main">
+    <h1>That page doesn't exist</h1>
+    <p class="sub lead">
+      The link may be old, or it may have a typo in it. Here's the way back.
+    </p>
+    <div class="btns">
+      <a class="btn primary" href="/practice">Start a practice test</a>
+      <a class="btn" href="/guides">Browse the guides</a>
+      <a class="btn" href="/">Home</a>
+    </div>
+  </main>
+</Base>

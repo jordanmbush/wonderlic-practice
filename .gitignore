@@ -1,2 +1,22 @@
-.DS_Store
+# Build output
+dist/
+.astro/
+
+# Infrastructure (SST's vendored platform + its state and generated types)
+.sst/
+sst-env.d.ts
+
+# Dependencies
 node_modules/
+
+# Local env — the Cloudflare API token lives here and nowhere else in the
+# working tree. Never commit it: it can rewrite DNS for the whole zone, and a
+# committed token stays valid in git history long after it is deleted from the
+# file. Example files are tracked so the shape is documented without the value.
+.env
+.env.*
+!.env.example
+
+# Editor / OS
+.DS_Store
+*.tsbuildinfo

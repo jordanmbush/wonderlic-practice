@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# The practice app paints itself with JavaScript, so there is nothing here for
+# a crawler to read. It also carries a noindex tag; this just saves the crawl.
+Disallow: /practice
+
+Sitemap: https://freewonderlicpractice.com/sitemap-index.xml

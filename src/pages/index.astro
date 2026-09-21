@@ -1,0 +1,199 @@
+---
+/**
+ * The page nearly everyone lands on from search.
+ *
+ * It has a real job beyond pointing at /practice/: the phrase people type is
+ * "free wonderlic practice test", and this is the only page that can rank for
+ * it. So it answers the questions they are actually asking — how long, how
+ * many, what counts as a good score — rather than being a splash screen with
+ * a button.
+ *
+ * The FAQ carries FAQPage structured data. Every answer here is also on the
+ * page in plain sight; marking up an answer a visitor can't see is against
+ * Google's guidance and is the sort of thing that earns a manual penalty.
+ */
+import Base from "../layouts/Base.astro";
+import { LESSONS, CATS, SITE } from "../data/content.mjs";
+import { GUIDES } from "../data/guides.mjs";
+
+const FAQ = [
+  {
+    q: "How many questions are on the Wonderlic test?",
+    a: "Fifty questions in twelve minutes — about fourteen seconds each. The short form used by some schools has thirty questions in eight minutes.",
+  },
+  {
+    q: "Can you finish the Wonderlic in time?",
+    a: "Almost nobody does, and it isn't designed to be finished. The clock is part of the test. Your score is simply how many you got right, so the goal is to collect as many correct answers as you can before time runs out.",
+  },
+  {
+    q: "Is a wrong answer worse than a blank?",
+    a: "No. Nothing is subtracted for a wrong answer, so a blank is always worth zero and a guess might be worth a point. Never leave anything blank.",
+  },
+  {
+    q: "What is a good Wonderlic score?",
+    a: "The average is usually reported at around 20 out of 50. What counts as good depends entirely on what you're sitting it for — programs and employers set their own expectations, so ask yours rather than aiming at a general number.",
+  },
+  {
+    q: "What is the Wonderlic SLE?",
+    a: "The Scholastic Level Exam: the version schools use for admissions. Same format and same timing as the version used for hiring — the mix of question types leans a little more on vocabulary, grammar and logic. There's also a shorter SLE-Q. This site practices both.",
+  },
+  {
+    q: "Is this the real Wonderlic test?",
+    a: `No. Every question here was written or generated for this site — none of it is real test content. ${SITE.mark} is a registered trademark of ${SITE.owner} and this site is not affiliated with them.`,
+  },
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQ.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: { "@type": "Answer", text: item.a },
+  })),
+};
+
+// The six worth putting on the front page: the topics that carry the most
+// questions on the real test, so the most useful places to send someone first.
+const FEATURED = [
+  "word-problems",
+  "vocabulary",
+  "number-series",
+  "logic-and-reasoning",
+  "arithmetic",
+  "test-strategy",
+];
+const featured = FEATURED.map((slug) => GUIDES.find((g) => g.slug === slug));
+---
+
+<Base
+  title="Free Wonderlic Practice Test — 50 Questions, 12 Minutes"
+  description="A free Wonderlic practice test with timed drills, worked explanations and plain-English guides to all 15 question types. No sign-up, nothing to pay."
+  jsonLd={jsonLd}
+>
+  <main id="main">
+    <section class="hero home">
+      <h1>Free {SITE.mark} practice test</h1>
+      <p class="sub lead">
+        Fifty questions in twelve minutes — about <b>fourteen seconds</b> each. Practice
+        against the real clock, see why every answer is what it is, and learn the
+        shortcuts that make the difference.
+      </p>
+      <div class="hero-actions">
+        <a class="btn primary big" href="/practice">Start a practice test</a>
+        <a class="btn big" href="/guides">Read the guides first</a>
+      </div>
+      <p class="small muted">
+        Free, no sign-up, no email. Your progress stays in your own browser.
+      </p>
+    </section>
+
+    <section>
+      <h2>What you get</h2>
+      <div class="modes">
+        <div class="mode card">
+          <div class="mi">⏱️</div>
+          <h3>Timed practice tests</h3>
+          <p>
+            Full length (50 questions, 12 minutes) or the short form (30 in 8),
+            getting harder as you go, just like the real thing.
+          </p>
+        </div>
+        <div class="mode card">
+          <div class="mi">⚡</div>
+          <h3>Speed drills</h3>
+          <p>
+            Beat the 14-second clock question by question, or sprint for three
+            minutes. Speed is the part most people neglect.
+          </p>
+        </div>
+        <div class="mode card">
+          <div class="mi">💡</div>
+          <h3>The fast way, every time</h3>
+          <p>
+            Miss one or run slow and you get a one-line shortcut for doing that
+            kind of question in your head — not just the answer.
+          </p>
+        </div>
+        <div class="mode card">
+          <div class="mi">📚</div>
+          <h3>A guide per question type</h3>
+          <p>
+            All fifteen kinds explained in plain English, with worked examples
+            you can follow before you try them timed.
+          </p>
+        </div>
+        <div class="mode card">
+          <div class="mi">🔁</div>
+          <h3>Your mistakes, saved</h3>
+          <p>
+            Every question you miss comes back until you get it right. That is
+            where most of the improvement comes from.
+          </p>
+        </div>
+        <div class="mode card">
+          <div class="mi">📈</div>
+          <h3>Accuracy and speed by topic</h3>
+          <p>
+            See which topics are costing you points and which are costing you
+            seconds, so you study the right thing.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Start with a question type</h2>
+      <div class="grid">
+        {
+          featured.map(
+            (g) =>
+              g && (
+                <a class="card lesson-card" href={`/guides/${g.slug}/`}>
+                  <div class="mi">
+                    {CATS.find((c) => c.id === g.id)?.icon ?? "🧭"}
+                  </div>
+                  <div>
+                    <h3>{LESSONS[g.id].title}</h3>
+                    <p>
+                      {CATS.find((c) => c.id === g.id)?.blurb ?? g.description}
+                    </p>
+                  </div>
+                </a>
+              ),
+          )
+        }
+      </div>
+      <p><a class="back" href="/guides">See all fifteen question types →</a></p>
+    </section>
+
+    <section>
+      <h2>Common questions</h2>
+      <div class="faq">
+        {
+          FAQ.map((item) => (
+            <div class="card">
+              <h3>{item.q}</h3>
+              <p>{item.a}</p>
+            </div>
+          ))
+        }
+      </div>
+      <p>
+        <a class="back" href="/what-is-the-wonderlic"
+          >More about the test and how it's scored →</a
+        >
+      </p>
+    </section>
+
+    <section class="cta card">
+      <div>
+        <h2>Twelve minutes is all it takes</h2>
+        <p>
+          Take one timed test to get a baseline, then work on what it shows.
+        </p>
+      </div>
+      <a class="btn primary" href="/practice">Start a practice test</a>
+    </section>
+  </main>
+</Base>

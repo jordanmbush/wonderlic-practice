@@ -1,0 +1,86 @@
+---
+import Base from "../../layouts/Base.astro";
+import { LESSONS, CATS } from "../../data/content.mjs";
+import { GUIDES } from "../../data/guides.mjs";
+
+// Strategy first — it's the one to read before any of the topic guides — then
+// the rest grouped the way the app groups them, so the two shelves match.
+const strategy = GUIDES.find((g) => g.id === "strategy");
+const byGroup = ["Verbal", "Reasoning", "Math"].map((group) => ({
+  group,
+  guides: GUIDES.filter(
+    (g) => CATS.find((c) => c.id === g.id)?.group === group,
+  ),
+}));
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: "Wonderlic Question Type Guides",
+  description:
+    "A plain-English guide to every question type on the Wonderlic test.",
+  hasPart: GUIDES.map((g) => ({
+    "@type": "LearningResource",
+    name: LESSONS[g.id].title,
+    url: new URL(`/guides/${g.slug}/`, Astro.site).href,
+  })),
+};
+---
+
+<Base
+  title="Wonderlic Question Types: A Guide to All 15"
+  description="Every question type on the Wonderlic test, explained in plain English with worked examples — vocabulary, word problems, number series, logic, shapes and more."
+  jsonLd={jsonLd}
+  breadcrumb={[
+    { name: "Home", href: "/" },
+    { name: "Guides", href: "/guides" },
+  ]}
+>
+  <main id="main">
+    <h1>Wonderlic question types</h1>
+    <p class="sub lead">
+      The test mixes fifteen kinds of question and never tells you which is
+      coming. Each guide below explains one of them plainly, shows worked
+      examples, and gives you the fastest way to answer it.
+    </p>
+
+    {
+      strategy && (
+        <a class="card lesson-card strategy" href={`/guides/${strategy.slug}/`}>
+          <div class="mi">🧭</div>
+          <div>
+            <h3>{LESSONS[strategy.id].title}</h3>
+            <p>{strategy.description}</p>
+          </div>
+        </a>
+      )
+    }
+
+    {
+      byGroup.map(({ group, guides }) => (
+        <>
+          <h2>{group}</h2>
+          <div class="grid">
+            {guides.map((g) => (
+              <a class="card lesson-card" href={`/guides/${g.slug}/`}>
+                <div class="mi">{CATS.find((c) => c.id === g.id)?.icon}</div>
+                <div>
+                  <h3>{LESSONS[g.id].title}</h3>
+                  <p>{CATS.find((c) => c.id === g.id)?.blurb}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        </>
+      ))
+    }
+
+    <section class="cta card">
+      <div>
+        <h2>Ready to try it timed?</h2>
+        <p>50 questions, 12 minutes, free, and nothing to sign up for.</p>
+      </div>
+      <a class="btn primary" href="/practice">Take a practice test</a>
+    </section>
+  </main>
+</Base>

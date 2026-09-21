@@ -1,0 +1,164 @@
+---
+/**
+ * One page per question type, built from the app's own lesson content.
+ *
+ * These pages are the entire reason the site has a build step. The practice
+ * engine can't be crawled — it is one URL that paints itself with JavaScript —
+ * so everything a person might search for lives here instead, as HTML on disk.
+ *
+ * The worked examples use <details>/<summary> rather than the app's click-to-
+ * reveal button. Same interaction, no JavaScript, and the answer is in the
+ * markup either way so a crawler reads the whole page. The app keeps its own
+ * version; this is not shared code and does not need to be.
+ */
+import Base from "../../layouts/Base.astro";
+import { LESSONS, CATS } from "../../data/content.mjs";
+import { GUIDES } from "../../data/guides.mjs";
+
+export function getStaticPaths() {
+  return GUIDES.map((guide) => {
+    const lesson = LESSONS[guide.id];
+    if (!lesson) {
+      // Fails the build rather than publishing an empty page. guides.mjs and
+      // lessons.js are edited by different hands at different times; this is
+      // the seam where they drift.
+      throw new Error(
+        `guides.mjs lists "${guide.slug}" with id "${guide.id}", but lessons.js has no lesson under that key.`,
+      );
+    }
+    return { params: { slug: guide.slug }, props: { guide, lesson } };
+  });
+}
+
+const { guide, lesson } = Astro.props;
+const cat = CATS.find((c) => c.id === guide.id);
+
+/**
+ * The visible heading, taken from the part of the search title before the
+ * colon: "Wonderlic Vocabulary Questions: Practice & Tips" becomes "Wonderlic
+ * Vocabulary Questions".
+ *
+ * The lesson's own title ("Vocabulary") is what the app calls the topic, and
+ * it reads as a heading inside the app where the surrounding page has already
+ * said what test this is. Someone arriving here cold from a search has no such
+ * context, and a page whose heading doesn't contain the words they searched
+ * for looks like the wrong page. Deriving it rather than storing a third
+ * string keeps the heading and the search result saying the same thing.
+ */
+const heading = guide.title.split(":")[0].trim();
+
+// Where "Practice this topic" goes. The app is hash-routed inside its own
+// page, so this is a normal link into /practice/ carrying the topic with it.
+const practiceHref =
+  guide.id === "strategy" ? "/practice" : `/practice/#/practice/${guide.id}`;
+
+// Three other guides to offer at the bottom, so every page links onward and no
+// guide is an orphan. Just the next three in order, wrapping around.
+const i = GUIDES.findIndex((g) => g.slug === guide.slug);
+const alsoRead = [1, 2, 3].map((n) => GUIDES[(i + n) % GUIDES.length]);
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  name: lesson.title,
+  description: guide.description,
+  learningResourceType: "Guide",
+  educationalLevel: "Adult education",
+  teaches: lesson.title,
+  inLanguage: "en",
+  isAccessibleForFree: true,
+};
+---
+
+<Base
+  title={guide.title}
+  description={guide.description}
+  jsonLd={jsonLd}
+  breadcrumb={[
+    { name: "Home", href: "/" },
+    { name: "Guides", href: "/guides" },
+    { name: lesson.title, href: `/guides/${guide.slug}/` },
+  ]}
+>
+  <main id="main" class="lesson">
+    <p class="crumbs">
+      <a href="/guides">← All guides</a>
+    </p>
+
+    <h1>{cat ? `${cat.icon} ` : ""}{heading}</h1>
+    <Fragment set:html={lesson.intro} />
+
+    {
+      (lesson.sections || []).map((section) => (
+        <>
+          <h2>{section.h}</h2>
+          <Fragment set:html={section.html} />
+        </>
+      ))
+    }
+
+    {
+      lesson.examples?.length && (
+        <>
+          <h2>Worked examples</h2>
+          <p class="sub">
+            Try each one before you open the answer — that is the part that
+            actually builds speed.
+          </p>
+          {lesson.examples.map((example) => (
+            <div class="card example">
+              <div class="qtext">
+                <Fragment set:html={example.q} />
+              </div>
+              <ol class="ex-choices">
+                {example.choices.map((choice, n) => (
+                  <li class={n === example.answer ? "right" : ""}>
+                    <Fragment set:html={choice} />
+                  </li>
+                ))}
+              </ol>
+              <details class="how">
+                <summary>Why that's the answer</summary>
+                <Fragment set:html={example.how} />
+              </details>
+            </div>
+          ))}
+        </>
+      )
+    }
+
+    <section class="cta card">
+      <div>
+        <h2>Practice this</h2>
+        <p>
+          Reading is the easy half. The test is timed, so the only thing that
+          moves a score is doing these against the clock.
+        </p>
+      </div>
+      <a class="btn primary" href={practiceHref}>
+        {
+          guide.id === "strategy"
+            ? "Start practicing"
+            : `Practice ${lesson.title.toLowerCase()}`
+        }
+      </a>
+    </section>
+
+    <h2>Read next</h2>
+    <div class="grid">
+      {
+        alsoRead.map((g) => (
+          <a class="card lesson-card" href={`/guides/${g.slug}/`}>
+            <div class="mi">
+              {CATS.find((c) => c.id === g.id)?.icon ?? "🧭"}
+            </div>
+            <div>
+              <h3>{LESSONS[g.id].title}</h3>
+              <p>{g.description}</p>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </main>
+</Base>

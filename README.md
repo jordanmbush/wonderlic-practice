@@ -2,42 +2,69 @@
 
 [freewonderlicpractice.com](https://freewonderlicpractice.com)
 
-A study app for the Wonderlic test: 50 questions in 12 minutes, scored as the number you get right. It also covers the school-admissions version (the SLE) and its shorter form (the SLE-Q) — both are options on the Test page. No install, no build step.
+A free study site for the Wonderlic test: 50 questions in 12 minutes, scored as the number you get right. It also covers the school-admissions version (the SLE) and its shorter form (the SLE-Q). Static site, no accounts, no tracking — progress stays in the visitor's own browser.
 
 ## Run it
 
-Double-click `index.html` to open it in your browser. Progress is saved in that browser.
+```
+npm install
+npm run dev      # http://localhost:4321
+npm run build    # writes dist/
+```
 
-To use it on a phone on the same Wi-Fi, run `python3 -m http.server 8000` in this folder and open `http://<your-computer-ip>:8000`.
+Deployment is S3 + CloudFront via SST. **[docs/deploying.md](docs/deploying.md) is the runbook** — start there, it assumes nothing exists yet.
+
+## How it's laid out
+
+The site is two halves, and the split is the whole architecture:
+
+**The guides are what search finds.** They're prerendered HTML at real URLs (`/guides/number-series/`), built by Astro from the lesson content. Anything a person might search for lives here.
+
+**The practice app is what they use.** It's still plain browser JavaScript — ordered `<script>` tags, no bundler, no framework — living on one page at `/practice/`. It paints itself with JavaScript, so it carries `noindex` and is left out of the sitemap; there's nothing there for a crawler to read.
+
+```
+src/pages/          the public pages (landing, guides, terms, privacy, the app's shell)
+src/layouts/        Base.astro — every page's <head>, header and footer
+src/data/guides.mjs the search titles and descriptions, and the guide order
+src/data/lessons.js lesson content; read at BUILD time only, never shipped
+src/data/content.mjs reads the app's own data so the two halves can't disagree
+public/js/          the practice app, served as-is
+public/css/         styles.css (the app) and site.css (the public pages)
+sst.config.ts       the infrastructure
+```
 
 ## What's inside
 
-- **Learn**: a plain-English lesson with worked examples for each of the 15 question types, plus test-day strategy.
-- **Practice**: untimed, with an explanation after every question and your time compared to the 14-second pace.
-- **Fast way**: miss a question, or take longer than 14 seconds, and you also get a one-line shortcut for doing that kind of question in your head.
-- **Speed Drill**: "beat the clock" (14 seconds per question), a 3-minute sprint, or a 25-question mini test.
-- **Full Test**: 50 questions in 12 minutes, or the short version some schools use (30 questions, 8 minutes). Questions get harder as you go, then you get a score, a breakdown by topic, and a review of every question.
-- **Test type**: pick SLE (school admissions) or Wonderlic (job applications) on the Test page or in Progress → Settings. It changes which topics come up — the SLE mix leans on vocabulary, grammar and logic with only a couple of shape questions; the job mix has more shapes, patterns and detail checking. The setting is saved, and both are still 50 questions in 12 minutes.
-- **Review Mistakes**: every question you miss is saved. Answer it correctly and it leaves the list.
-- **Progress**: your score history against your target score, plus accuracy and speed for each topic.
+- **Guides**: a plain-English page per question type with worked examples, plus test-day strategy.
+- **Practice**: untimed, with an explanation after every question and your time against the 14-second pace.
+- **Fast way**: miss a question, or take longer than 14 seconds, and you get a one-line shortcut for doing that kind of question in your head.
+- **Speed Drill**: beat the clock (14 seconds a question), a 3-minute sprint, or a 25-question mini test.
+- **Full Test**: 50 questions in 12 minutes, or the short version some schools use (30 in 8). Questions get harder as you go, then you get a score, a topic breakdown, and a review of every question.
+- **Test type**: SLE (school admissions) or Wonderlic (job applications), set in Progress → Settings. It changes which topics come up — SLE leans on vocabulary, grammar and logic; the job mix has more shapes, patterns and detail checking.
+- **Review Mistakes**: every question you miss is saved until you get it right.
+- **Progress**: score history against your target, plus accuracy and speed per topic.
 
 Keyboard: `A`–`E` or `1`–`5` to answer, `Enter` for next, `←`/`→` to move around during a test.
 
-## Questions
+## Adding questions
 
-- `js/bank/*.js`: hand-written questions (vocabulary, analogies, sayings, odd one out, grammar). Add more by adding objects to these lists.
-- `js/generators.js`: templates that build a fresh question every time (math, number series, letters, logic, dates, detail checking, scrambled sentences), so these never run out.
-- `js/spatial.js`: shape and pattern questions, drawn as inline SVG.
-- `js/lessons.js`: lesson content.
-- `js/tips.js`: the fallback "fast way" line for each written topic. Generated questions carry their own tip in `js/generators.js`.
+- `public/js/bank/*.js`: hand-written questions (vocabulary, analogies, sayings, odd one out, grammar). Add objects to these lists.
+- `public/js/generators.js`: templates that build a fresh question every time (math, series, letters, logic, dates, detail checking, scrambled sentences), so these never run out.
+- `public/js/spatial.js`: shape and pattern questions, drawn as inline SVG.
+- `public/js/tips.js`: the fallback "fast way" line per written topic. Generated questions carry their own.
 
-## Before launching it publicly
+These files are in `.prettierignore` on purpose — a bank is data written to be scanned, and reflowing it to 80 columns makes the one thing anyone does here harder.
 
-"Wonderlic" is a registered trademark of Wonderlic, Inc., so the site keeps its own name separate from the test's name. The test is only ever named to say what the site helps you prepare for.
+**Adding a question type** means four things, and the build fails loudly if you miss one: a `CATS` entry with a `slug` in `public/js/core.js`, questions, a lesson in `src/data/lessons.js`, and an entry in `META` + `ORDER` in `src/data/guides.mjs`.
 
-- **Site name, domain and contact email** live in `SITE` in `js/core.js`. The name is repeated in the `<title>` and header link in `index.html`, which is the only other place to change it.
-- **Disclaimer** sits in the footer of `index.html` and appears on every page. Leave it there.
-- **Terms & Privacy** is `js/legal.js`, shown at `#/legal`. Still to do: have a lawyer read it.
-- **`contact@freewonderlicpractice.com` has to actually work** — the legal page tells people to use it for corrections and takedown requests, so set up the mailbox before launch.
-- **The privacy text says the site collects nothing.** That is true only while there is no analytics, no ads and no sign-up form. Adding any of those means rewriting that section first, and probably adding cookie consent.
-- **Never add real test questions**, and don't copy questions from other prep sites. Everything here being original is the main thing protecting the site.
+## Things that must stay true
+
+"Wonderlic" is a registered trademark of Wonderlic, Inc. This site names the test only to say what it helps you prepare for, which is what makes that use legitimate. Several things hold that up, and none are decoration:
+
+- **The footer disclaimer in `Base.astro`** appears on every page. Leave it there — someone landing on one guide from search should see it without clicking.
+- **The site's own name stays distinct from the mark's owner.** `SITE` in `public/js/core.js` is the single source; the `<title>` in each page's front matter is the only other place a name appears.
+- **Never add real test questions**, and don't copy from other prep sites. Everything here being original is the main protection.
+- **`/privacy` promises no analytics, no ads and no tracking cookies.** That's currently true, and it's why search traffic is measured with Google Search Console (a DNS TXT record, nothing on the page). Adding analytics, ads or a signup form means rewriting that page in the same change — and probably adding cookie consent for UK/EU visitors.
+- **`contact@freewonderlicpractice.com` has to actually work.** `/terms` tells people to use it for corrections and takedown requests.
+
+Still open: a lawyer has not read `/terms` or `/privacy`.

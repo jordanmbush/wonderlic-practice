@@ -1,0 +1,143 @@
+---
+/**
+ * The explainer page: what the test is, how it's scored, who takes it.
+ *
+ * This targets the informational searches ("what is the wonderlic", "how is
+ * the wonderlic scored", "what is the SLE") that come before anyone looks for
+ * practice. Someone arriving here isn't ready to take a test yet, so the page
+ * answers the question first and only then points at one.
+ *
+ * Every number on this page is one the test's publisher or common reporting
+ * states plainly. Where a figure is commonly cited but not something we can
+ * stand behind, it is hedged in the text rather than stated flatly — a study
+ * site that invents statistics deserves neither trust nor traffic.
+ */
+import Base from "../../layouts/Base.astro";
+import { SITE } from "../../data/content.mjs";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: "What is the Wonderlic test?",
+  description:
+    "What the Wonderlic test is, how it is scored, how long it takes and who takes it.",
+  inLanguage: "en",
+};
+---
+
+<Base
+  title="What Is the Wonderlic Test? Format, Timing & Scoring"
+  description="The Wonderlic is 50 questions in 12 minutes, scored as the number you get right. What's on it, how it's scored, and how the school version (SLE) differs."
+  jsonLd={jsonLd}
+  breadcrumb={[
+    { name: "Home", href: "/" },
+    { name: "The test", href: "/what-is-the-wonderlic" },
+  ]}
+>
+  <main id="main" class="lesson">
+    <h1>What is the {SITE.mark} test?</h1>
+    <p class="sub lead">
+      A short, fast general-ability test. Fifty questions, twelve minutes, and
+      your score is simply how many you answered correctly.
+    </p>
+
+    <h2>The format</h2>
+    <ul>
+      <li>
+        <b>50 questions in 12 minutes.</b> That's about fourteen seconds per question,
+        which is the whole difficulty of it.
+      </li>
+      <li>
+        <b>Mixed question types, in no particular order.</b> A vocabulary question
+        can be followed by a number series, then a word problem, then a shape puzzle.
+        You never know what's next.
+      </li>
+      <li>
+        <b>It gets harder as you go.</b> The early questions are quick points. Rushing
+        past them to reach the hard ones is the most common mistake.
+      </li>
+      <li>
+        <b>Nothing is subtracted for a wrong answer.</b> A blank scores zero; a guess
+        might score a point.
+      </li>
+    </ul>
+
+    <h2>How it's scored</h2>
+    <p>
+      Your raw score is the number of correct answers out of 50. There is no
+      adjustment for how far you got or how fast you worked — thirty correct is
+      thirty, whether you answered thirty questions or fifty.
+    </p>
+    <p>
+      The average is usually reported at around 20. What counts as a good score
+      depends entirely on what you're sitting it for: programs and employers set
+      their own expectations, and some publish a minimum. Ask yours rather than
+      aiming at a general figure — it's the only number that matters to you.
+    </p>
+
+    <h2>Almost nobody finishes</h2>
+    <p>
+      Running out of time is the normal experience, not a sign that something
+      went wrong. The test is built so that very few people answer all fifty.
+      Knowing that in advance is worth a surprising amount on the day: people
+      who expect to finish panic in the last two minutes, and panic costs more
+      points than difficulty does.
+    </p>
+    <p>
+      The practical consequence is that <b>pace beats perfection</b>. A question
+      you spend a minute on has cost you four others you could have answered.
+    </p>
+
+    <h2>The school version: the SLE</h2>
+    <p>
+      Schools using the test for admissions call it the <b>SLE</b>, short for
+      Scholastic Level Exam. It's the same format and the same timing as the
+      version used for hiring; the mix of question types leans a little further
+      toward vocabulary, grammar and logic, with fewer shape puzzles.
+    </p>
+    <p>
+      There is also a shorter form, the <b>SLE-Q</b>: 30 questions in 8 minutes,
+      the same kinds of question with fewer of them. Ask your program which one
+      you'll sit — and either way, the preparation is identical.
+    </p>
+    <p>
+      This site practices both. The setting is on the Progress page inside the
+      practice app, and it changes which topics come up.
+    </p>
+
+    <h2>How to prepare in a week</h2>
+    <ol>
+      <li>
+        <b>Take one timed test cold.</b> It's unpleasant and it's the most useful
+        thing you'll do, because everything after it is aimed at something real.
+      </li>
+      <li>
+        <b>Read the guide for your two worst topics.</b> Not all fifteen — two.
+      </li>
+      <li>
+        <b>Drill those against the clock</b> until you're answering them in about
+        fourteen seconds rather than merely getting them right.
+      </li>
+      <li>
+        <b>Take another timed test</b> a few days later, and repeat on whatever it
+        exposes.
+      </li>
+    </ol>
+    <p>
+      The thing most people skip is speed. Accuracy without speed doesn't move a
+      Wonderlic score, because the clock runs out either way.
+    </p>
+
+    <section class="cta card">
+      <div>
+        <h2>Try it timed</h2>
+        <p>Twelve minutes, free, nothing to sign up for.</p>
+      </div>
+      <a class="btn primary" href="/practice">Start a practice test</a>
+    </section>
+
+    <p>
+      <a class="back" href="/guides">Read the question-type guides →</a>
+    </p>
+  </main>
+</Base>

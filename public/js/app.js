@@ -223,13 +223,13 @@
     const weak = weakCats(3);
     const totalAnswered = Object.values(d.stats).reduce((s, v) => s + v.n, 0);
     let next;
-    if (totalAnswered < 20) next = { t: 'Start by reading the test strategy, then try a topic.', href: '#/learn/strategy', b: 'Read strategy' };
+    if (totalAnswered < 20) next = { t: 'Start by reading the test strategy, then try a topic.', href: guideUrl('strategy'), b: 'Read strategy' };
     else if (!tests.length) next = { t: 'You’ve warmed up. Take a full timed test to get a baseline score.', href: '#/test', b: 'Take a full test' };
     else next = { t: `Work on your weakest topic: <b>${catName(weak[0].id)}</b>.`, href: `#/practice/${weak[0].id}`, b: 'Practice it' };
 
     setView(`
       <section class="hero">
-        <h1>Free Wonderlic® practice test</h1>
+        <h1>Your practice</h1>
         <p class="sub">50 questions · 12 minutes · about <b>14 seconds</b> per question</p>
         <div class="stat-row">
           <div class="stat"><div class="v">${d.settings.target}</div><div class="l">Target score</div></div>
@@ -240,7 +240,7 @@
       </section>
       <section class="next card"><div>${next.t}</div><a class="btn primary" href="${next.href}">${next.b}</a></section>
       <section class="modes">
-        <a class="mode card" href="#/learn"><div class="mi">📚</div><h3>Learn</h3><p>Plain-English lessons and worked examples for every question type.</p></a>
+        <a class="mode card" href="/guides"><div class="mi">📚</div><h3>Guides</h3><p>Plain-English lessons and worked examples for every question type.</p></a>
         <a class="mode card" href="#/practice"><div class="mi">🎯</div><h3>Practice</h3><p>No time pressure. Instant feedback and an explanation after every question.</p></a>
         <a class="mode card" href="#/drill"><div class="mi">⚡</div><h3>Speed Drill</h3><p>Beat the 14-second clock or sprint for 3 minutes to build speed.</p></a>
         <a class="mode card" href="#/test"><div class="mi">⏱️</div><h3>Full Test</h3><p>50 questions, 12 minutes, harder as you go — just like the real thing.</p></a>
@@ -255,66 +255,10 @@
       </section>`);
   }
 
-  // ---------------- LEARN ----------------
-  function viewLearnList() {
-    const L = window.LESSONS || {};
-    const st = Store.get().stats;
-    const groups = ['Verbal', 'Reasoning', 'Math'];
-    setView(`
-      <h1>Learn</h1>
-      <p class="sub">Read a lesson, then practice that topic untimed. Once you’re getting most right, switch to Speed Drills.</p>
-      <a class="card lesson-card strategy" href="#/learn/strategy"><div class="mi">🧭</div><div><h3>${L.strategy ? L.strategy.title : 'Test-day strategy'}</h3><p>Pacing, guessing, and a study plan. Start here.</p></div></a>
-      ${groups
-        .map(
-          (g) => `<h2>${g}</h2><div class="grid">${CATS.filter((c) => c.group === g)
-            .map((c) => {
-              const s = st[c.id];
-              return `<a class="card lesson-card" href="#/learn/${c.id}"><div class="mi">${c.icon}</div><div><h3>${c.name}</h3><p>${c.blurb}</p>${s ? `<p class="muted small">${pct(s.c / s.n)} correct · ${s.n} answered</p>` : ''}</div></a>`;
-            })
-            .join('')}</div>`
-        )
-        .join('')}`);
-  }
-
-  function viewLesson(id) {
-    const L = (window.LESSONS || {})[id];
-    if (!L) return viewLearnList();
-    const c = CAT[id];
-    setView(`
-      <a class="back" href="#/learn">← All lessons</a>
-      <h1>${c ? c.icon + ' ' : ''}${L.title}</h1>
-      <div class="lesson">${L.intro || ''}
-        ${(L.sections || []).map((s) => `<h2>${s.h}</h2>${s.html}`).join('')}
-        ${
-          L.examples && L.examples.length
-            ? `<h2>Worked examples</h2>${L.examples
-                .map(
-                  (ex, i) => `<div class="card example">
-                <div class="qtext">${ex.q}</div>
-                <ol class="ex-choices" type="A">${ex.choices.map((ch, j) => `<li data-j="${j}">${ch}</li>`).join('')}</ol>
-                <button class="btn small reveal" data-i="${i}">Show answer</button>
-                <div class="how" hidden><p><b>Answer: ${KEYS[ex.answer]}. ${ex.choices[ex.answer]}</b></p>${ex.how}</div>
-              </div>`
-                )
-                .join('')}`
-            : ''
-        }
-      </div>
-      ${
-        c
-          ? `<div class="lesson-cta card"><div>Ready to try it?</div><div class="btns"><a class="btn primary" href="#/practice/${id}">Practice (untimed)</a><a class="btn" href="#/drill/${id}">Speed drill</a></div></div>`
-          : `<div class="lesson-cta card"><div>Ready?</div><div class="btns"><a class="btn primary" href="#/learn">Pick a topic</a><a class="btn" href="#/test">Full test</a></div></div>`
-      }`);
-    $main.querySelectorAll('.reveal').forEach((b) =>
-      b.addEventListener('click', () => {
-        const card = b.closest('.example');
-        card.querySelector('.how').hidden = false;
-        const ex = L.examples[+b.dataset.i];
-        card.querySelector(`li[data-j="${ex.answer}"]`).classList.add('right');
-        b.remove();
-      })
-    );
-  }
+  // Lessons are not in here any more: they are real pages at /guides/<slug>/,
+  // built from src/data/lessons.js so that search engines can read them. The
+  // app links out to them rather than carrying a second copy that only ever
+  // rendered behind a '#'. `guideUrl` comes from core.js.
 
   // ---------------- PRACTICE / DRILL SETUP ----------------
   function viewPracticeSetup() {
@@ -785,13 +729,11 @@
     const parts = (location.hash.replace(/^#\/?/, '') || '').split('/');
     const [page, arg] = parts;
     document.querySelectorAll('nav a').forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#/' + (page || '')));
-    if (page === 'learn') return arg ? viewLesson(arg) : viewLearnList();
     if (page === 'practice') return arg && CAT[arg] ? runSession({ mode: 'practice', title: 'Practice · ' + catName(arg), cats: [arg], diff: 0 }) : viewPracticeSetup();
     if (page === 'drill') return viewDrillSetup(CAT[arg] ? arg : null);
     if (page === 'test') return viewTestIntro();
     if (page === 'review') return viewReview();
     if (page === 'stats') return viewStats();
-    if (page === 'legal') return setView(window.LEGAL.html);
     viewHome();
   }
   document.addEventListener('keydown', (e) => {

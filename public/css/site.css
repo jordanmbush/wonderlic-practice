@@ -1,0 +1,157 @@
+/* Styles for the public pages — the landing page, the guides, terms and
+   privacy. The practice app's own styles live in styles.css, which this
+   loads on top of: everything here is either new or a deliberate override for
+   pages that are read rather than clicked through. */
+
+/* Reading measure. The app is a grid of cards and wants the full width; a
+   guide is prose and gets hard to read past about 70 characters a line. */
+.lesson > p,
+.lesson > ul,
+.lesson > ol,
+main > .sub,
+.faq p {
+  max-width: 68ch;
+}
+
+.lead {
+  font-size: 1.1rem;
+}
+
+main > section {
+  margin-bottom: 28px;
+}
+
+/* ---------- landing page ---------- */
+.hero.home {
+  padding: 28px 0 8px;
+}
+.hero.home h1 {
+  font-size: 2.6rem;
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+@media (max-width: 640px) {
+  .hero.home h1 {
+    font-size: 1.9rem;
+  }
+}
+.hero-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 18px 0 10px;
+}
+.hero-actions .btn.big {
+  width: auto;
+  min-width: 220px;
+  margin-top: 0;
+}
+@media (max-width: 480px) {
+  .hero-actions .btn.big {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* The six feature cards reuse the app's .mode grid, but these are plain
+   <div>s rather than links, so they need the colour the anchor gave them. */
+.modes .mode.card {
+  color: var(--ink);
+}
+
+/* ---------- call to action ---------- */
+.cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: var(--brand-soft);
+  border-color: transparent;
+  margin: 24px 0;
+}
+.cta h2 {
+  margin: 0 0 4px;
+  font-size: 1.15rem;
+}
+.cta p {
+  margin: 0;
+  color: var(--muted);
+}
+.cta .btn {
+  white-space: nowrap;
+}
+@media (max-width: 640px) {
+  .cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* ---------- guides ---------- */
+.crumbs {
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+}
+.crumbs a {
+  color: var(--muted);
+  font-weight: 600;
+}
+.crumbs a:hover {
+  color: var(--brand);
+}
+
+/* Worked examples. The app reveals the answer with a button and JavaScript;
+   a guide page uses <details> so the answer is in the HTML either way — a
+   crawler reads the whole explanation, and the page needs no script at all. */
+.how summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--brand);
+  list-style: none;
+}
+.how summary::-webkit-details-marker {
+  display: none;
+}
+.how summary::before {
+  content: "▸";
+  display: inline-block;
+  margin-right: 7px;
+}
+.how[open] summary::before {
+  content: "▾";
+}
+.how summary:hover {
+  text-decoration: underline;
+}
+/* Closed, the correct answer must not be highlighted — that would give it
+   away in the list above before the reader has tried it. */
+.example .ex-choices li.right {
+  background: none;
+  color: inherit;
+  font-weight: 400;
+}
+.example .how[open] ~ .ex-choices li.right,
+.example:has(.how[open]) .ex-choices li.right {
+  background: var(--good-soft);
+  color: var(--good);
+  font-weight: 600;
+}
+
+/* ---------- FAQ ---------- */
+.faq {
+  display: grid;
+  gap: 10px;
+}
+.faq h3 {
+  margin: 0 0 6px;
+  font-size: 1.02rem;
+}
+.faq p {
+  margin: 0;
+  color: var(--muted);
+}
+
+/* ---------- footer ---------- */
+.footlinks a {
+  margin: 0 2px;
+}

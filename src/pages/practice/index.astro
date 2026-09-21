@@ -1,0 +1,52 @@
+---
+/**
+ * The practice engine — the original app, unchanged in spirit.
+ *
+ * It is still plain browser JavaScript loaded by ordered <script> tags: no
+ * bundler, no framework, no build output of its own. Astro's only involvement
+ * is writing the shell around it. Opening `public/js/app.js` and editing it is
+ * still the whole workflow, which is worth protecting.
+ *
+ * ⚠️ Script ORDER matters and is not enforced by anything. `core.js` defines
+ * the registry (`QB`) that every bank and generator calls into, so it must
+ * come first; `app.js` reads what they all registered, so it must come last.
+ * `is:inline` keeps Astro from bundling or reordering them.
+ *
+ * `noindex`, because this page is an empty <main> until JavaScript runs — see
+ * Base.astro. The guides are what search is meant to find; this is where
+ * someone goes once they've found them.
+ */
+import Base from "../../layouts/Base.astro";
+import { SITE } from "../../data/content.mjs";
+---
+
+<Base
+  title="Wonderlic Practice Test — Timed Practice & Drills"
+  description="Take a timed Wonderlic practice test, run speed drills, and review every question you miss."
+  noindex={true}
+  bare={true}
+>
+  <header class="top">
+    <a class="brand" href="/">⏱️ <span>{SITE.name}</span></a>
+    <nav>
+      <a href="/guides">Guides</a>
+      <a href="#/practice">Practice</a>
+      <a href="#/drill">Drill</a>
+      <a href="#/test">Test</a>
+      <a href="#/stats">Progress</a>
+    </nav>
+  </header>
+
+  <main id="main"></main>
+
+  <script is:inline src="/js/core.js"></script>
+  <script is:inline src="/js/generators.js"></script>
+  <script is:inline src="/js/bank/vocab.js"></script>
+  <script is:inline src="/js/bank/analogy.js"></script>
+  <script is:inline src="/js/bank/meaning.js"></script>
+  <script is:inline src="/js/bank/oddone.js"></script>
+  <script is:inline src="/js/bank/grammar.js"></script>
+  <script is:inline src="/js/spatial.js"></script>
+  <script is:inline src="/js/tips.js"></script>
+  <script is:inline src="/js/app.js"></script>
+</Base>

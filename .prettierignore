@@ -1,0 +1,23 @@
+dist/
+.astro/
+.sst/
+node_modules/
+package-lock.json
+
+# The practice app and its question banks are left alone on purpose.
+#
+# A bank file is data, not code: a few hundred question objects, each written
+# on as few lines as it takes to read one at a glance. Prettier reflows them to
+# 80 columns, which turns a 171-question file into several thousand lines and
+# makes the one thing anyone ever does here — scan the questions and add
+# another — materially harder. The generators are the same shape.
+#
+# This is not "the old code we haven't got to yet". Everything Astro builds
+# IS formatted; these files are the exception, and it's deliberate.
+public/js/
+src/data/lessons.js
+
+# The app's own stylesheet, written one rule per line to stay scannable. Its
+# companion, public/css/site.css, is new and IS formatted — the line is drawn
+# between the original app and what was built around it, not between file types.
+public/css/styles.css

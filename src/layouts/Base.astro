@@ -1,0 +1,199 @@
+---
+/**
+ * The shell every page renders into.
+ *
+ * `title` and `description` are required props rather than optional ones on
+ * purpose: a page that forgets them is the most common way a static site
+ * quietly fails to rank, and a type error is cheaper than catching it in
+ * review. `canonical` is derived from `Astro.site` (set in astro.config.mjs)
+ * so it can never drift from the sitemap built out of the same value.
+ *
+ * The footer here is the trademark notice. It is in the layout rather than in
+ * each page so that it cannot be forgotten on a new one — see /terms/ for why
+ * it matters.
+ */
+import { SITE } from "../data/content.mjs";
+
+interface Props {
+  title: string;
+  description: string;
+  /** Overrides the site-wide social card. */
+  image?: string;
+  /** Structured data for this page, serialized into a JSON-LD script tag. */
+  jsonLd?: Record<string, unknown>;
+  /**
+   * The trail to this page, root first, as `BreadcrumbList` structured data.
+   * Given rather than derived from the path, because a path segment like
+   * `odd-one-out` doesn't know it is called "Odd one out".
+   */
+  breadcrumb?: Array<{ name: string; href: string }>;
+  /**
+   * Keep this page out of search results.
+   *
+   * Used by `/practice/`, whose body is an empty <main> until JavaScript
+   * fills it — there is nothing there for a crawler to rank, and a page of
+   * nothing is a thin-content signal against the whole domain. `follow`
+   * rather than `nofollow`: the page isn't worth indexing, but its links to
+   * the guides still are.
+   *
+   * Anything set here must also be filtered out of the sitemap, which
+   * astro.config.mjs does. Listing a URL you have told Google to ignore is a
+   * contradiction it reports back at you.
+   */
+  noindex?: boolean;
+  /** Drops the site header, for the practice app which draws its own. */
+  bare?: boolean;
+}
+
+const {
+  title,
+  description,
+  image = "/og-default.png",
+  jsonLd,
+  breadcrumb,
+  noindex = false,
+  bare = false,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL(image, Astro.site).href;
+
+const crumbs = breadcrumb?.length
+  ? {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: breadcrumb.map((step, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: step.name,
+        item: new URL(step.href, Astro.site).href,
+      })),
+    }
+  : undefined;
+
+/**
+ * The publisher, stamped onto every page that carries structured data.
+ *
+ * Deliberately NOT an Organization with a logo, which is what a company site
+ * would claim. This is one person's study site, and the honest claim is a
+ * WebSite with a name. Overclaiming in structured data is both a
+ * misrepresentation and, since the name contains someone else's trademark,
+ * exactly the sort of thing that makes a nominative-use argument harder.
+ */
+const structured = jsonLd && {
+  ...jsonLd,
+  isPartOf: jsonLd.isPartOf ?? {
+    "@type": "WebSite",
+    name: SITE.name,
+    url: new URL("/", Astro.site).href,
+  },
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {
+      /*
+      No canonical on a page we've asked search engines to skip. A canonical
+      is a claim that this URL is the one to index; saying that on the same
+      page as `noindex` is a contradiction, and on /404.html it would assert
+      that a missing page is a real one.
+    */
+    }
+    {
+      noindex ? (
+        <meta name="robots" content="noindex, follow" />
+      ) : (
+        <link rel="canonical" href={canonical} />
+      )
+    }
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏱️</text></svg>"
+    />
+    <meta name="theme-color" content="#2f6fed" />
+    <meta name="generator" content={Astro.generator} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/site.css" />
+
+    {
+      structured && (
+        <script
+          type="application/ld+json"
+          is:inline
+          set:html={JSON.stringify(structured)}
+        />
+      )
+    }
+    {
+      crumbs && (
+        <script
+          type="application/ld+json"
+          is:inline
+          set:html={JSON.stringify(crumbs)}
+        />
+      )
+    }
+  </head>
+  <body>
+    {
+      !bare && (
+        <header class="top">
+          <a class="brand" href="/">
+            ⏱️ <span>{SITE.name}</span>
+          </a>
+          <nav>
+            <a href="/practice">Practice</a>
+            <a href="/guides">Guides</a>
+            <a href="/what-is-the-wonderlic">The test</a>
+          </nav>
+        </header>
+      )
+    }
+
+    <slot />
+
+    <!--
+      The trademark notice. Every page, no exceptions — see /terms/.
+      "Wonderlic" is someone else's mark and this site names it only to say
+      which test it helps with; this footer is what makes that explicit to a
+      visitor who lands on any single page from search.
+    -->
+    <footer class="foot">
+      <p>
+        <b>{SITE.mark}</b> is a registered trademark of {SITE.owner} This site is
+        not affiliated with, endorsed by, or sponsored by {SITE.owner}
+      </p>
+      <p>
+        Every question here is original practice material written for this site.
+        No real test content is used, and a score here is not an official score.
+      </p>
+      <p class="footlinks">
+        <a href="/guides">Guides</a> · <a href="/practice">Practice test</a> ·
+        <a href="/terms">Terms</a> · <a href="/privacy">Privacy</a> ·
+        <a href={`mailto:${SITE.email}`}>Contact</a>
+      </p>
+    </footer>
+  </body>
+</html>

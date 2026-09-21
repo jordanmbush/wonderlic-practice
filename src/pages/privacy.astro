@@ -1,0 +1,93 @@
+---
+/**
+ * The privacy page.
+ *
+ * ⚠️ This page says the site collects nothing. That is only true while there
+ * is no analytics script, no ads, no embedded video, no web fonts served from
+ * somewhere that logs, and no sign-up form. If any of those is ever added,
+ * REWRITE THIS PAGE IN THE SAME CHANGE — and note that ads or analytics also
+ * bring cookie consent for visitors in the UK and EU, and disclosure duties in
+ * California.
+ *
+ * Search traffic is measured with Google Search Console, which is verified by
+ * a DNS record and puts nothing on the page. That is why this promise can
+ * stay true and still leave the site measurable.
+ */
+import Base from "../layouts/Base.astro";
+import { SITE } from "../data/content.mjs";
+
+const updated = "September 2026";
+---
+
+<Base
+  title="Privacy"
+  description={`How ${SITE.domain} handles your data: no accounts, no tracking, no analytics. Your practice progress stays in your own browser.`}
+  breadcrumb={[
+    { name: "Home", href: "/" },
+    { name: "Privacy", href: "/privacy" },
+  ]}
+>
+  <main id="main">
+    <h1>Privacy</h1>
+    <p class="sub">
+      Last updated {updated}. The short version: nothing about you leaves your
+      browser.
+    </p>
+
+    <section class="card legal">
+      <h2>What we collect</h2>
+      <p>Nothing about you.</p>
+      <ul>
+        <li>
+          There is no account and no sign-up. You are never asked for your name
+          or your email.
+        </li>
+        <li>There are no ads, no analytics scripts and no tracking cookies.</li>
+        <li>
+          Your answers, scores and progress are saved in your own browser and
+          never sent anywhere. We cannot see them.
+        </li>
+      </ul>
+    </section>
+
+    <section class="card legal">
+      <h2>Where your progress lives</h2>
+      <p>
+        In your browser's own storage, on the device you study on. That has two
+        consequences worth knowing:
+      </p>
+      <ul>
+        <li>
+          It stays on that one device and that one browser. Studying on your
+          phone won't show up on your laptop.
+        </li>
+        <li>
+          Clearing your browsing data, or studying in a private window, erases
+          it. There is no backup and no way to recover it.
+        </li>
+      </ul>
+      <p>
+        That's fine for a few weeks of study, which is what most people need
+        this for — but it's better to know it up front than to discover it the
+        week of your test.
+      </p>
+    </section>
+
+    <section class="card legal">
+      <h2>What the server sees</h2>
+      <p>
+        The same thing every web server sees when you open any page: the request
+        itself. The site is static files on a content delivery network, so there
+        is no database, no profile and nothing tied to you.
+      </p>
+    </section>
+
+    <section class="card legal">
+      <h2>Questions</h2>
+      <p>
+        Email <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+      </p>
+      <p>See also: <a href="/terms">terms of use</a>.</p>
+    </section>
+  </main>
+</Base>

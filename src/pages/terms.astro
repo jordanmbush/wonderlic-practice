@@ -1,0 +1,90 @@
+---
+/**
+ * Terms of use and the trademark statement.
+ *
+ * The Trademarks section is the point of this page. "Wonderlic" is a
+ * registered trademark of Wonderlic, Inc.; this site names it to say which
+ * test it helps you prepare for, which is what the law allows, and this page
+ * plus the footer on every other page is what makes that explicit rather than
+ * implied. Do not soften or remove it.
+ *
+ * This text has not been through a lawyer. It is written to be honest and
+ * readable, not to be exhaustive.
+ */
+import Base from "../layouts/Base.astro";
+import { SITE } from "../data/content.mjs";
+
+const updated = "September 2026";
+---
+
+<Base
+  title="Terms of Use"
+  description={`Terms of use for ${SITE.domain}, an independent free study site for the Wonderlic test.`}
+  breadcrumb={[
+    { name: "Home", href: "/" },
+    { name: "Terms", href: "/terms" },
+  ]}
+>
+  <main id="main">
+    <h1>Terms of use</h1>
+    <p class="sub">
+      Last updated {updated}. Plain English, because there isn't much to say.
+    </p>
+
+    <section class="card legal">
+      <h2>What this site is</h2>
+      <p>
+        {SITE.domain} is a free, independent study site for people preparing for the
+        {SITE.mark} test. Every question on it was written or generated for this site.
+        None of it is real test content, and nobody here has seen the real test.
+      </p>
+      <p>
+        A score you get here is a practice score. It is not an official result,
+        it does not predict your real score, and it means nothing to a school or
+        an employer.
+      </p>
+    </section>
+
+    <section class="card legal">
+      <h2>Trademarks</h2>
+      <p>
+        <b>{SITE.mark} is a registered trademark of {SITE.owner}</b> This site is
+        not affiliated with, endorsed by, or sponsored by {SITE.owner}
+      </p>
+      <p>
+        The name is used only to say which test this site helps you prepare for.
+        {SITE.owner} had no part in making this site and does not review or approve
+        anything on it.
+      </p>
+    </section>
+
+    <section class="card legal">
+      <h2>Using the site</h2>
+      <ul>
+        <li>It's free to use for your own studying.</li>
+        <li>
+          The questions, guides and explanations belong to this site. Please
+          don't copy them onto another site or into a product you sell.
+        </li>
+        <li>
+          We don't promise the site will be available, error-free, or that it
+          will raise your score. Use it at your own risk, and don't rely on it
+          as your only preparation.
+        </li>
+        <li>
+          To the extent the law allows, we aren't liable for any loss that comes
+          from using the site.
+        </li>
+      </ul>
+    </section>
+
+    <section class="card legal">
+      <h2>Questions or corrections</h2>
+      <p>
+        Found a wrong answer, or need something taken down? Email
+        <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+      </p>
+      <p>See also: <a href="/privacy">how your data is handled</a>.</p>
+    </section>
+  </main>
+</Base>
