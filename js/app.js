@@ -46,6 +46,29 @@
   const tipOf = (q) => q.t || (window.CAT_TIP && CAT_TIP[q.cat]) || '';
   const tipHtml = (q) => (tipOf(q) ? `<div class="tip"><b>Fast way</b> ${tipOf(q)}</div>` : '');
 
+  // Which version of the test she's preparing for. Saved once and used
+  // everywhere the question mix matters.
+  const testMode = () => {
+    const m = Store.get().settings.mode;
+    return MODES.some((x) => x.id === m) ? m : 'sle';
+  };
+  const modeInfo = () => MODES.find((m) => m.id === testMode());
+  function modePicker() {
+    const cur = testMode();
+    return `<div class="seg modes">${MODES.map(
+      (m) => `<button data-mode="${m.id}" class="${m.id === cur ? 'on' : ''}">${m.name} <span>${m.who}</span></button>`
+    ).join('')}</div>`;
+  }
+  function wireModePicker(after) {
+    $main.querySelectorAll('[data-mode]').forEach((b) => {
+      b.onclick = () => {
+        Store.get().settings.mode = b.dataset.mode;
+        Store.save();
+        after();
+      };
+    });
+  }
+
   // ---------------- question selection ----------------
   function prep(item) {
     const q = Object.assign({}, item);
@@ -91,17 +114,20 @@
   }
 
   function weightedCat(cats) {
+    const mode = testMode();
     const list = cats.filter((c) => QB.has(c));
-    const total = list.reduce((s, c) => s + CAT[c].weight, 0);
+    const w = (c) => catWeight(c, mode) || 1; // a topic with no slots can still be practiced
+    const total = list.reduce((s, c) => s + w(c), 0);
     let r = Math.random() * total;
-    for (const c of list) if ((r -= CAT[c].weight) < 0) return c;
+    for (const c of list) if ((r -= w(c)) < 0) return c;
     return list[0];
   }
 
   function buildTest(n = TEST_Q) {
+    const mode = testMode();
     const slots = [];
     CATS.forEach((c) => {
-      for (let i = 0; i < c.weight; i++) slots.push(QB.has(c.id) ? c.id : 'wordprob');
+      for (let i = 0; i < catWeight(c.id, mode); i++) slots.push(QB.has(c.id) ? c.id : 'wordprob');
     });
     const order = shuffle(slots).slice(0, n);
     const used = new Set();
@@ -116,7 +142,8 @@
       const acc = s && s.n ? s.c / s.n : null;
       const sec = s && s.n ? s.ms / s.n / 1000 : null;
       // Unpracticed topics count as weak; slow topics count a bit weaker.
-      const score = acc === null ? 0.45 : acc - Math.max(0, (sec - TARGET_SEC) / 100);
+      // Topics that carry more questions in the chosen mix come first.
+      const score = (acc === null ? 0.45 : acc - Math.max(0, (sec - TARGET_SEC) / 100)) - catWeight(c.id, testMode()) / 200;
       return { id: c.id, acc, sec, n: s ? s.n : 0, score };
     })
       .sort((a, b) => a.score - b.score)
@@ -527,12 +554,18 @@
           <li>Keyboard: press <kbd>A</kbd>–<kbd>E</kbd> (or <kbd>1</kbd>–<kbd>5</kbd>) to answer, <kbd>←</kbd>/<kbd>→</kbd> to move.</li>
         </ul>
       </div>
+      <div class="card">
+        <h3>Test type</h3>
+        ${modePicker()}
+        <p class="muted small">${modeInfo().note}</p>
+      </div>
       <div class="btns center wrap">
         <button class="btn primary big" id="go">Full test · 50 questions, 12 minutes</button>
         <button class="btn big" id="goq">Short test · 30 questions, 8 minutes</button>
       </div>
-      <p class="muted center small">Schools call these the <b>SLE</b> and the <b>SLE-Q</b>. Ask your program which one you’ll take.</p>
+      <p class="muted center small">In the school version these two are called the <b>SLE</b> and the <b>SLE-Q</b>. Ask your program which one you’ll take.</p>
       <p class="muted center">${[best(TEST_Q), best(SLEQ_Q)].filter(Boolean).join(' · ') || 'No tests taken yet.'}</p>`);
+    wireModePicker(viewTestIntro);
     document.getElementById('go').onclick = () => startTest({ count: TEST_Q, seconds: TEST_SEC, title: 'Full test', full: true });
     document.getElementById('goq').onclick = () => startTest({ count: SLEQ_Q, seconds: SLEQ_SEC, title: 'Short test', full: true });
   }
@@ -639,7 +672,7 @@
       });
       if (cfg.full) {
         const d = Store.get();
-        d.tests.push({ date: new Date().toISOString(), score, answered: results.filter((r) => r.pick !== null).length, used, perCat, outOf: qs.length });
+        d.tests.push({ date: new Date().toISOString(), score, answered: results.filter((r) => r.pick !== null).length, used, perCat, outOf: qs.length, mode: testMode() });
         Store.save();
       }
       showTestResults(cfg, results, score, used, perCat, timeUp);
@@ -723,9 +756,13 @@
         <p class="muted small">Avg time is green when you’re under the 14-second pace.</p>
       </div>
       <div class="card"><h3>Settings</h3>
+        <label class="setting">Test type — which version you’re preparing for:</label>
+        ${modePicker()}
+        <p class="muted small">${modeInfo().note}</p>
         <label class="setting">Target score (check your program’s requirement): <input type="number" id="target" min="1" max="50" value="${target}"></label>
         <div class="btns"><button class="btn danger" id="reset">Reset all progress</button></div>
       </div>`);
+    wireModePicker(viewStats);
     document.getElementById('target').onchange = (e) => {
       const v = Math.max(1, Math.min(50, +e.target.value || 22));
       d.settings.target = v;

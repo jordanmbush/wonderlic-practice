@@ -15,6 +15,7 @@ To use it on a phone on the same Wi-Fi, run `python3 -m http.server 8000` in thi
 - **Fast way**: miss a question, or take longer than 14 seconds, and you also get a one-line shortcut for doing that kind of question in your head.
 - **Speed Drill**: "beat the clock" (14 seconds per question), a 3-minute sprint, or a 25-question mini test.
 - **Full Test**: 50 questions in 12 minutes, or the short version some schools use (30 questions, 8 minutes). Questions get harder as you go, then you get a score, a breakdown by topic, and a review of every question.
+- **Test type**: pick SLE (school admissions) or Wonderlic (job applications) on the Test page or in Progress → Settings. It changes which topics come up — the SLE mix leans on vocabulary, grammar and logic with only a couple of shape questions; the job mix has more shapes, patterns and detail checking. The setting is saved, and both are still 50 questions in 12 minutes.
 - **Review Mistakes**: every question you miss is saved. Answer it correctly and it leaves the list.
 - **Progress**: your score history against your target score, plus accuracy and speed for each topic.
 

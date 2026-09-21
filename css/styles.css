@@ -141,6 +141,7 @@ button.link { background: none; border: none; color: var(--brand); font: inherit
 .seg.col { flex-direction: column; }
 .seg.col button { text-align: left; display: flex; flex-direction: column; }
 .seg.col span { color: var(--muted); font-size: 0.88rem; font-weight: 400; }
+.seg.modes button span { display: block; color: var(--muted); font-size: 0.85rem; font-weight: 400; margin-top: 2px; }
 
 /* ---------- runner ---------- */
 .runbar {
