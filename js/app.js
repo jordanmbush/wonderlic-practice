@@ -32,13 +32,18 @@
       if (!q.gen) d.seen[q.id] = 1;
       const day = new Date().toISOString().slice(0, 10);
       d.daily[day] = (d.daily[day] || 0) + 1;
-      const snap = { id: q.id, cat: q.cat, q: q.q, c: q.c, a: q.a, e: q.e, d: q.d, fixed: true };
+      const snap = { id: q.id, cat: q.cat, q: q.q, c: q.c, a: q.a, e: q.e, t: q.t, d: q.d, fixed: true };
       d.missed = d.missed.filter((m) => m.id !== q.id);
       if (!correct) d.missed.push(snap);
       if (d.missed.length > 200) d.missed = d.missed.slice(-200);
       this.save();
     },
   };
+
+  // The one-line shortcut. Generated questions carry their own; written ones
+  // fall back to the standard approach for their topic.
+  const tipOf = (q) => q.t || (window.CAT_TIP && CAT_TIP[q.cat]) || '';
+  const tipHtml = (q) => (tipOf(q) ? `<div class="tip"><b>Fast way</b> ${tipOf(q)}</div>` : '');
 
   // ---------------- question selection ----------------
   function prep(item) {
@@ -431,7 +436,8 @@
       fb.className = 'feedback ' + (ok ? 'good' : 'bad');
       fb.innerHTML = `<div class="fb-head">${ok ? '✓ Correct' : i === -1 ? '⏰ Time’s up' : '✗ Not quite'} <span class="time ${sec <= TARGET_SEC ? 'fast' : 'slow'}">${sec.toFixed(1)}s ${sec <= TARGET_SEC ? '— on pace' : '— aim for under 14s'}</span></div>
         ${ok ? '' : `<div>Correct answer: <b>${KEYS[cur.a]}. ${cur.c[cur.a]}</b></div>`}
-        <div class="explain">${cur.e || ''}</div>`;
+        <div class="explain">${cur.e || ''}</div>
+        ${ok && sec <= TARGET_SEC ? '' : tipHtml(cur)}`;
       document.getElementById('next').hidden = false;
       if (ok && cfg.mode === 'drill') {
         const at = s.i;
@@ -484,6 +490,7 @@
           <div class="qtext">${r.q.q}</div>
           <ol class="ex-choices" type="A">${r.q.c.map((c, j) => `<li class="${j === r.q.a ? 'right' : j === r.pick ? 'wrong' : ''}">${c}</li>`).join('')}</ol>
           <div class="explain">${r.q.e || ''}</div>
+          ${r.ok && !(r.ms / 1000 > TARGET_SEC) ? '' : tipHtml(r.q)}
         </div>`
         )
         .join('')}</div>`;
