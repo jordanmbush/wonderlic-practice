@@ -229,7 +229,7 @@
 
     setView(`
       <section class="hero">
-        <h1>Wonderlic Practice</h1>
+        <h1>Free Wonderlic® practice test</h1>
         <p class="sub">50 questions · 12 minutes · about <b>14 seconds</b> per question</p>
         <div class="stat-row">
           <div class="stat"><div class="v">${d.settings.target}</div><div class="l">Target score</div></div>
@@ -791,6 +791,7 @@
     if (page === 'test') return viewTestIntro();
     if (page === 'review') return viewReview();
     if (page === 'stats') return viewStats();
+    if (page === 'legal') return setView(window.LEGAL.html);
     viewHome();
   }
   document.addEventListener('keydown', (e) => {

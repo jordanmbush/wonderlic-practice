@@ -53,6 +53,12 @@
   ];
   const CAT = Object.fromEntries(CATS.map((c) => [c.id, c]));
 
+  // This site's own name, kept apart from the test's name on purpose.
+  // "Wonderlic" is someone else's trademark, so it is used to describe which
+  // test we help with — never as our own brand. Renaming the site means
+  // changing `name` here plus the <title> and header in index.html.
+  const SITE = { name: 'Prep Sprint', mark: 'Wonderlic®', owner: 'Wonderlic, Inc.' };
+
   // The two versions of the test. Same length and timing — they differ in
   // which topics come up.
   const MODES = [
@@ -84,6 +90,7 @@
   window.CATS = CATS;
   window.CAT = CAT;
   window.MODES = MODES;
+  window.SITE = SITE;
   window.catWeight = catWeight;
   window.QB = QB;
 })();
